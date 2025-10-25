@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLM Comedy - Matt Lilley Media | Christchurch Stand-up Comedy</title>
+    <meta name="description" content="MLM Comedy - Christchurch's premier stand-up comedy production company. Catch the best comedy shows in New Zealand.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a, #1a0d1a, #0d1a1a);
+            z-index: -2;
+        }
+
+        .triangle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            background-image: 
+                linear-gradient(60deg, transparent 40%, rgba(139, 69, 139, 0.1) 40%, rgba(139, 69, 139, 0.1) 60%, transparent 60%),
+                linear-gradient(-60deg, transparent 40%, rgba(0, 255, 255, 0.1) 40%, rgba(0, 255, 255, 0.1) 60%, transparent 60%);
+            background-size: 200% 200%;
+            animation: triangleMove 20s ease-in-out infinite;
+        }
+
+        @keyframes triangleMove {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.95);
+            border-right: 2px solid;
+            border-image: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff) 1;
+            padding: 30px 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(255, 0, 255, 0.8),
+                0 0 30px rgba(0, 255, 255, 0.6),
+                3px 3px 0 rgba(255, 0, 255, 0.5),
+                -3px -3px 0 rgba(0, 255, 255, 0.5);
+            letter-spacing: 3px;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(255, 0, 255, 0.8),
+                0 0 30px rgba(0, 255, 255, 0.6),
+                3px 3px 0 rgba(255, 0, 255, 0.5),
+                -3px -3px 0 rgba(0, 255, 255, 0.5);
+            }
+            25% { text-shadow: 
+                0 0 10px rgba(255, 0, 255, 0.8),
+                0 0 20px rgba(0, 255, 255, 0.8),
+                0 0 30px rgba(255, 0, 255, 0.6),
+                -3px 3px 0 rgba(0, 255, 255, 0.5),
+                3px -3px 0 rgba(255, 0, 255, 0.5);
+            }
+            50% { text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(255, 0, 255, 0.8),
+                0 0 30px rgba(0, 255, 255, 0.6),
+                3px -3px 0 rgba(255, 0, 255, 0.5),
+                -3px 3px 0 rgba(0, 255, 255, 0.5);
+            }
+        }
+
+        .tagline {
+            color: #00ffff;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            margin-top: 40px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid transparent;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-item:hover:before {
+            left: 100%;
+        }
+
+        .nav-item:hover {
+            border: 1px solid #00ffff;
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .coming-soon {
+            font-size: 10px;
+            color: #ff00ff;
+            margin-left: 10px;
+        }
+
+        /* Social Links */
+        .social-links {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .social-links h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .social-btn {
+            display: inline-block;
+            width: 45%;
+            padding: 12px;
+            margin: 5px 2%;
+            text-align: center;
+            color: #fff;
+            text-decoration: none;
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn.instagram {
+            border-color: #ff00ff;
+            background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(255, 0, 255, 0.1));
+        }
+
+        .social-btn.facebook {
+            border-color: #00ffff;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 50px;
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .hero-title {
+            font-size: 72px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .location-tag {
+            display: inline-block;
+            padding: 10px 25px;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            font-size: 18px;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+
+        .announcement {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 50px auto;
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.5); }
+        }
+
+        .announcement h2 {
+            color: #ff00ff;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .announcement p {
+            color: #fff;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Shows Section */
+        .shows-section {
+            padding: 80px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .shows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        .show-card {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(0, 255, 255, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .show-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+        }
+
+        .show-image {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .show-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .show-card:hover .show-image img {
+            transform: scale(1.05);
+        }
+
+        .show-info {
+            padding: 30px;
+        }
+
+        .show-title {
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .show-comedian {
+            font-size: 18px;
+            color: #ff00ff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .show-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #00ffff;
+        }
+
+        .show-details div {
+            padding: 8px 12px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .show-description {
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .show-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 0, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Mobile Responsiveness */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 20px;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .shows-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .show-title {
+                font-size: 24px;
+            }
+
+            .show-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="triangle-overlay"></div>
+
+    <button class="mobile-menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <div class="logo">MLM</div>
+            <div class="tagline">Matt Lilley Media</div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#home" class="nav-item">Home</a>
+            <a href="#shows" class="nav-item">Upcoming Shows</a>
+            <a href="about.html" class="nav-item">About</a>
+            <a href="comedians.html" class="nav-item">Comedians</a>
+            <a href="book.html" class="nav-item">Book Us</a>
+            <a href="contact.html" class="nav-item">Contact</a>
+        </nav>
+
+        <div class="social-links">
+            <h3>Follow Us</h3>
+            <a href="https://www.instagram.com/mlmcomedy" target="_blank" class="social-btn instagram">Instagram</a>
+            <a href="https://www.facebook.com/mlmcomedynz" target="_blank" class="social-btn facebook">Facebook</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <section class="hero-section" id="home">
+            <h1 class="hero-title">MLM COMEDY</h1>
+            <p class="hero-subtitle">Stand-up Comedy Production</p>
+            <div class="location-tag">CHRISTCHURCH, NZ</div>
+
+            <div class="announcement">
+                <h2>Welcome to MLM Comedy</h2>
+                <p>We're Christchurch's premier stand-up comedy production company, dedicated to bringing you the best live comedy entertainment in New Zealand. From intimate club shows to large-scale productions, we create unforgettable nights of laughter that celebrate the art of stand-up comedy.</p>
+            </div>
+        </section>
+
+        <section class="shows-section" id="shows">
+            <h2 class="section-title">Upcoming Shows</h2>
+            <div class="shows-grid">
+                <div class="show-card">
+                    <div class="show-image">
+                        <img src="thedeathofrugbyposter.png" alt="The Death Of Rugby - Stand-up Comedy Show" />
+                    </div>
+                    <div class="show-info">
+                        <h3 class="show-title">The Death Of Rugby</h3>
+                        <p class="show-comedian">by Matt Lilley</p>
+                        <div class="show-details">
+                            <div class="show-date">October 17, 2025</div>
+                            <div class="show-time">6:30 PM</div>
+                            <div class="show-venue">Good Times Comedy Club</div>
+                            <div class="show-price">$20</div>
+                        </div>
+                        <p class="show-description">
+                            A hilarious yet heartfelt farewell to New Zealand's most sacred institution. Matt Lilley delivers the eulogy rugby never knew it needed.
+                        </p>
+                        <div class="show-buttons">
+                            <a href="thedeathofrugby.html" class="btn-secondary">Learn More</a>
+                            <a href="https://events.humanitix.com/the-death-of-rugby" target="_blank" class="btn-primary">Get Tickets</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Close menu when clicking a link on mobile
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                }
+            });
+        });
+
+        // Add glitch effect on hover
+        const logo = document.querySelector('.logo');
+        logo.addEventListener('mouseenter', () => {
+            logo.style.animation = 'glitch 0.3s infinite';
+        });
+        logo.addEventListener('mouseleave', () => {
+            logo.style.animation = 'glitch 2s infinite';
+        });
+    </script>
+</body>
+</html>
