@@ -305,9 +305,10 @@
 
         .shows-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 40px;
             padding: 0 20px;
+            align-items: start;
         }
 
         .show-card {
@@ -317,6 +318,18 @@
             overflow: hidden;
             transition: all 0.3s ease;
             position: relative;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .show-card.portrait {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .show-card.square {
+            max-width: 500px;
+            margin: 0 auto;
         }
 
         .show-card:hover {
@@ -327,15 +340,17 @@
 
         .show-image {
             width: 100%;
-            height: 300px;
             overflow: hidden;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .show-image img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            display: block;
             transition: transform 0.3s ease;
         }
 
@@ -595,9 +610,20 @@
                     // Capitalize first letter of each word
                     showName = showName.charAt(0).toUpperCase() + showName.slice(1);
                     
+                    // Detect aspect ratio
+                    const aspectRatio = img.width / img.height;
+                    let cardClass = 'show-card';
+                    
+                    // A4 portrait is roughly 0.707 (1:1.414), square is 1.0
+                    if (aspectRatio < 0.85) {
+                        cardClass += ' portrait';
+                    } else if (aspectRatio >= 0.85 && aspectRatio <= 1.15) {
+                        cardClass += ' square';
+                    }
+                    
                     // Create show card
                     const showCard = document.createElement('div');
-                    showCard.className = 'show-card';
+                    showCard.className = cardClass;
                     showCard.innerHTML = `
                         <div class="show-image">
                             <img src="${filename}" alt="${showName} - Stand-up Comedy Show" />
