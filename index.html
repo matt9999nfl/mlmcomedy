@@ -537,28 +537,8 @@
             <h2 class="section-title">Shows</h2>
             
             <h3 class="section-title" style="font-size: 36px; margin-bottom: 30px; margin-top: 60px;">Past Shows</h3>
-            <div class="shows-grid">
-                <div class="show-card">
-                    <div class="show-image">
-                        <img src="thedeathofrugbyposter.png" alt="The Death Of Rugby - Stand-up Comedy Show" />
-                    </div>
-                    <div class="show-info">
-                        <h3 class="show-title">The Death Of Rugby</h3>
-                        <p class="show-comedian">by Matt Lilley</p>
-                        <div class="show-details">
-                            <div class="show-date">October 17, 2025</div>
-                            <div class="show-time">6:30 PM</div>
-                            <div class="show-venue">Good Times Comedy Club</div>
-                            <div class="show-price">$20</div>
-                        </div>
-                        <p class="show-description">
-                            A hilarious yet heartfelt farewell to New Zealand's most sacred institution. Matt Lilley delivers the eulogy rugby never knew it needed.
-                        </p>
-                        <div class="show-buttons">
-                            <a href="thedeathofrugby.html" class="btn-secondary">Learn More</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="shows-grid" id="past-shows-grid">
+                <!-- Past show posters will be automatically loaded here -->
             </div>
         </section>
     </main>
@@ -586,6 +566,63 @@
         logo.addEventListener('mouseleave', () => {
             logo.style.animation = 'glitch 2s infinite';
         });
+
+        // Automatically load all .show.png files for Past Shows
+        async function loadPastShows() {
+            // List of show poster files (add new .show.png files here or use a directory listing)
+            const showFiles = [
+                'thedeathofrugbyposter.png',
+                'fun.show.png',
+                'SS.show.png',
+                'Gal.show.png',
+                'lnl.show.png',
+                'Dor.show.png'
+            ];
+
+            const pastShowsGrid = document.getElementById('past-shows-grid');
+            
+            for (const filename of showFiles) {
+                // Check if the image file exists
+                const img = new Image();
+                img.onload = function() {
+                    // Extract show name from filename (remove .show.png or poster.png)
+                    let showName = filename
+                        .replace('.show.png', '')
+                        .replace('poster.png', '')
+                        .replace(/([A-Z])/g, ' $1') // Add spaces before capital letters
+                        .trim();
+                    
+                    // Capitalize first letter of each word
+                    showName = showName.charAt(0).toUpperCase() + showName.slice(1);
+                    
+                    // Create show card
+                    const showCard = document.createElement('div');
+                    showCard.className = 'show-card';
+                    showCard.innerHTML = `
+                        <div class="show-image">
+                            <img src="${filename}" alt="${showName} - Stand-up Comedy Show" />
+                        </div>
+                        <div class="show-info">
+                            <h3 class="show-title">${showName}</h3>
+                            <p class="show-description">
+                                Past comedy show presented by MLM Comedy.
+                            </p>
+                        </div>
+                    `;
+                    
+                    pastShowsGrid.appendChild(showCard);
+                };
+                
+                img.onerror = function() {
+                    console.log(`Could not load image: ${filename}`);
+                };
+                
+                img.src = filename;
+            }
+        }
+
+        // Load past shows when page loads
+        document.addEventListener('DOMContentLoaded', loadPastShows);
     </script>
 </body>
 </html>
