@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comedian Portal - MLM Comedy</title>
+    <meta name="description" content="MLM Comedy Comedian Portal - View gigs, request spots, and manage your bookings.">
+    
+    <!-- Netlify Identity Widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a, #1a0d1a, #0d1a1a);
+            z-index: -2;
+        }
+
+        .triangle-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            background-image: 
+                linear-gradient(60deg, transparent 40%, rgba(139, 69, 139, 0.1) 40%, rgba(139, 69, 139, 0.1) 60%, transparent 60%),
+                linear-gradient(-60deg, transparent 40%, rgba(0, 255, 255, 0.1) 40%, rgba(0, 255, 255, 0.1) 60%, transparent 60%);
+            background-size: 200% 200%;
+            animation: triangleMove 20s ease-in-out infinite;
+        }
+
+        @keyframes triangleMove {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.95);
+            border-right: 2px solid;
+            border-image: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff) 1;
+            padding: 30px 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(255, 0, 255, 0.8);
+            letter-spacing: 3px;
+        }
+
+        .logo a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .portal-title {
+            color: #00ffff;
+            font-size: 14px;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .user-info {
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .nav-menu {
+            margin-top: 20px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid transparent;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            border: 1px solid #00ffff;
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(255, 0, 100, 0.3));
+            border: 1px solid #ff0066;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.5), rgba(255, 0, 100, 0.5));
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #888;
+        }
+
+        /* Auth Section (shown when not logged in) */
+        .auth-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            flex-direction: column;
+        }
+
+        .auth-box {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .auth-box h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .auth-box p {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .auth-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Portal Content (shown when logged in) */
+        .portal-content {
+            display: none;
+        }
+
+        .portal-content.active {
+            display: block;
+        }
+
+        /* Tabs/Sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Gig Cards */
+        .gig-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .gig-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .gig-card:hover {
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .gig-date {
+            font-size: 14px;
+            color: #ff00ff;
+            margin-bottom: 10px;
+        }
+
+        .gig-venue {
+            font-size: 22px;
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .gig-time {
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .gig-slots {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #00ff00;
+            margin-bottom: 15px;
+        }
+
+        .gig-slots.full {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .gig-description {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .gig-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .gig-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .gig-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .gig-btn.pending {
+            background: linear-gradient(45deg, #ffaa00, #ff6600);
+        }
+
+        .gig-btn.booked {
+            background: linear-gradient(45deg, #00ff00, #00aa00);
+        }
+
+        /* Calendar View */
+        .calendar-container {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            padding: 10px 20px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(0, 255, 255, 0.4);
+        }
+
+        .calendar-month {
+            font-size: 24px;
+            color: #00ffff;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            padding: 10px;
+            color: #ff00ff;
+            font-weight: bold;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px;
+            background: rgba(30, 30, 30, 0.5);
+            border-radius: 5px;
+            min-height: 80px;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #00ffff;
+        }
+
+        .calendar-day.has-gig {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+        }
+
+        .calendar-day-number {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .calendar-gig-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            margin-top: 5px;
+        }
+
+        .calendar-gig-dot.pending {
+            background: #ffaa00;
+        }
+
+        /* Profile Form */
+        .profile-form {
+            max-width: 600px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00ffff;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            color: #fff;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00ffff;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .save-btn {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* My Gigs Section */
+        .my-gigs-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .my-gigs-tab {
+            padding: 10px 25px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .my-gigs-tab.active {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+            border-color: #00ffff;
+        }
+
+        .my-gigs-tab:hover {
+            border-color: #00ffff;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-badge.approved {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+
+        .status-badge.rejected {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+
+        .lineup-position {
+            display: inline-block;
+            padding: 5px 10px;
+            background: rgba(255, 0, 255, 0.2);
+            border: 1px solid #ff00ff;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ff00ff;
+            margin-top: 10px;
+        }
+
+        /* Loading & Messages */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-top-color: #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #00ffff;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .gig-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                font-size: 12px;
+            }
+
+            .logout-btn {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                right: auto;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="triangle-overlay"></div>
+
+    <!-- Auth Section (shown when not logged in) -->
+    <div id="auth-section" class="auth-section">
+        <div class="auth-box">
+            <h2>🎤 Comedian Portal</h2>
+            <p>Sign in to view available gigs, request spots, and manage your bookings.</p>
+            <button class="auth-btn" onclick="netlifyIdentity.open()">Sign In / Sign Up</button>
+        </div>
+    </div>
+
+    <!-- Portal Content (shown when logged in) -->
+    <div id="portal-content" class="portal-content">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo"><a href="index.html">MLM</a></div>
+                <div class="portal-title">Comedian Portal</div>
+            </div>
+
+            <div class="user-info">
+                <div class="user-name" id="user-name">Loading...</div>
+                <div class="user-email" id="user-email"></div>
+            </div>
+
+            <nav class="nav-menu">
+                <a class="nav-item active" data-section="gigs">🎭 Available Gigs</a>
+                <a class="nav-item" data-section="my-gigs">📋 My Gigs</a>
+                <a class="nav-item" data-section="calendar">📅 Calendar</a>
+                <a class="nav-item" data-section="profile">👤 Profile</a>
+            </nav>
+
+            <div class="logout-btn" onclick="logout()">🚪 Sign Out</div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Available Gigs Section -->
+            <section id="section-gigs" class="section active">
+                <div class="page-header">
+                    <h1 class="page-title">Available Gigs</h1>
+                    <p class="page-subtitle">Browse and request spots for upcoming shows</p>
+                </div>
+                <div id="message-container"></div>
+                <div id="gigs-container" class="gig-grid">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Loading gigs...
+                    </div>
+                </div>
+            </section>
+
+            <!-- My Gigs Section -->
+            <section id="section-my-gigs" class="section">
+                <div class="page-header">
+                    <h1 class="page-title">My Gigs</h1>
+                    <p class="page-subtitle">Track your bookings and pending requests</p>
+                </div>
+                <div class="my-gigs-tabs">
+                    <button class="my-gigs-tab active" data-tab="approved">✅ Approved</button>
+                    <button class="my-gigs-tab" data-tab="pending">⏳ Pending</button>
+                    <button class="my-gigs-tab" data-tab="rejected">❌ Rejected</button>
+                </div>
+                <div id="my-gigs-container" class="gig-grid">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        Loading your gigs...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calendar Section -->
+            <section id="section-calendar" class="section">
+                <div class="page-header">
+                    <h1 class="page-title">Calendar</h1>
+                    <p class="page-subtitle">View your upcoming gigs at a glance</p>
+                </div>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button onclick="changeMonth(-1)">← Prev</button>
+                        </div>
+                        <div class="calendar-month" id="calendar-month"></div>
+                        <div class="calendar-nav">
+                            <button onclick="changeMonth(1)">Next →</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid" id="calendar-grid"></div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="section-profile" class="section">
+                <div class="page-header">
+                    <h1 class="page-title">My Profile</h1>
+                    <p class="page-subtitle">Manage your comedian profile</p>
+                </div>
+                <div id="profile-message"></div>
+                <form class="profile-form" id="profile-form" onsubmit="saveProfile(event)">
+                    <div class="form-group">
+                        <label for="profile-name">Stage Name / Full Name</label>
+                        <input type="text" id="profile-name" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email">Email</label>
+                        <input type="email" id="profile-email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-phone">Phone Number</label>
+                        <input type="tel" id="profile-phone" placeholder="021 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-bio">Bio</label>
+                        <textarea id="profile-bio" placeholder="Tell us about yourself and your comedy style..."></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">💾 Save Profile</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Request Gig Modal -->
+    <div class="modal" id="request-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Request Gig Spot</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-gig-details"></div>
+            <div class="form-group">
+                <label for="request-message">Message to Admin (optional)</label>
+                <textarea id="request-message" placeholder="Any notes about your availability or set length..."></textarea>
+            </div>
+            <button class="gig-btn" onclick="submitRequest()">📨 Submit Request</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let allGigs = [];
+        let myGigs = { approved: [], pending: [], rejected: [] };
+        let myGigsTab = 'approved';
+        let currentMonth = new Date();
+        let selectedGigId = null;
+
+        // Initialize Netlify Identity
+        netlifyIdentity.on('init', user => {
+            currentUser = user;
+            updateUI();
+        });
+
+        netlifyIdentity.on('login', user => {
+            currentUser = user;
+            updateUI();
+            netlifyIdentity.close();
+            loadAllData();
+        });
+
+        netlifyIdentity.on('logout', () => {
+            currentUser = null;
+            updateUI();
+        });
+
+        // Initialize
+        netlifyIdentity.init();
+
+        function updateUI() {
+            const authSection = document.getElementById('auth-section');
+            const portalContent = document.getElementById('portal-content');
+
+            if (currentUser) {
+                authSection.style.display = 'none';
+                portalContent.classList.add('active');
+                document.getElementById('user-name').textContent = 
+                    currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                document.getElementById('user-email').textContent = currentUser.email;
+            } else {
+                authSection.style.display = 'flex';
+                portalContent.classList.remove('active');
+            }
+        }
+
+        function logout() {
+            netlifyIdentity.logout();
+        }
+
+        // API Helper
+        async function apiCall(endpoint, options = {}) {
+            const token = await netlifyIdentity.currentUser()?.jwt();
+            
+            const response = await fetch(`/api/${endpoint}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers,
+                },
+            });
+
+            return response.json();
+        }
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadGigs(),
+                loadMyGigs(),
+                loadProfile(),
+            ]);
+            renderCalendar();
+        }
+
+        // Load available gigs
+        async function loadGigs() {
+            const container = document.getElementById('gigs-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading gigs...</div>';
+
+            try {
+                const data = await apiCall('getGigs');
+                if (data.success) {
+                    allGigs = data.gigs;
+                    renderGigs();
+                } else {
+                    container.innerHTML = `<div class="message error">${data.error}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="message error">Failed to load gigs. Please try again.</div>';
+            }
+        }
+
+        // Render gigs
+        function renderGigs() {
+            const container = document.getElementById('gigs-container');
+            
+            if (allGigs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Gigs Available</h3>
+                        <p>Check back soon for upcoming shows!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allGigs.map(gig => {
+                // Check if user has a booking for this gig
+                const myBooking = [...myGigs.approved, ...myGigs.pending].find(
+                    g => g.gig?.id === gig.id
+                );
+                
+                let buttonText = 'Request Spot';
+                let buttonClass = '';
+                let disabled = false;
+
+                if (myBooking) {
+                    if (myBooking.booking.status === 'approved') {
+                        buttonText = '✅ Booked';
+                        buttonClass = 'booked';
+                        disabled = true;
+                    } else {
+                        buttonText = '⏳ Pending';
+                        buttonClass = 'pending';
+                        disabled = true;
+                    }
+                } else if (gig.slotsAvailable <= 0) {
+                    buttonText = 'Full';
+                    disabled = true;
+                }
+
+                return `
+                    <div class="gig-card">
+                        <div class="gig-date">${formatDate(gig.date)}</div>
+                        <div class="gig-venue">${escapeHtml(gig.venue)}</div>
+                        <div class="gig-time">🕐 ${escapeHtml(gig.time)}</div>
+                        <div class="gig-slots ${gig.slotsAvailable <= 0 ? 'full' : ''}">
+                            ${gig.slotsAvailable} / ${gig.slotsTotal} spots available
+                        </div>
+                        ${gig.description ? `<div class="gig-description">${escapeHtml(gig.description)}</div>` : ''}
+                        <button class="gig-btn ${buttonClass}" 
+                                onclick="openRequestModal('${gig.id}')" 
+                                ${disabled ? 'disabled' : ''}>
+                            ${buttonText}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load my gigs
+        async function loadMyGigs() {
+            try {
+                const data = await apiCall('getMyGigs');
+                if (data.success) {
+                    myGigs = {
+                        approved: data.approved || [],
+                        pending: data.pending || [],
+                        rejected: data.rejected || [],
+                    };
+                    renderMyGigs();
+                }
+            } catch (error) {
+                console.error('Failed to load my gigs:', error);
+            }
+        }
+
+        // Render my gigs
+        function renderMyGigs() {
+            const container = document.getElementById('my-gigs-container');
+            const gigs = myGigs[myGigsTab] || [];
+
+            if (gigs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No ${myGigsTab} gigs</h3>
+                        <p>${myGigsTab === 'approved' ? 'Your approved gigs will appear here.' : 
+                             myGigsTab === 'pending' ? 'Your pending requests will appear here.' :
+                             'Rejected requests will appear here.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = gigs.map(({ booking, gig }) => {
+                if (!gig) return '';
+
+                // Find position in lineup
+                let position = null;
+                if (booking.status === 'approved' && gig.lineup) {
+                    const lineupEntry = gig.lineup.find(l => l.comedianId === currentUser?.id);
+                    if (lineupEntry) position = lineupEntry.order;
+                }
+
+                return `
+                    <div class="gig-card">
+                        <span class="status-badge ${booking.status}">${booking.status.toUpperCase()}</span>
+                        <div class="gig-date">${formatDate(gig.date)}</div>
+                        <div class="gig-venue">${escapeHtml(gig.venue)}</div>
+                        <div class="gig-time">🕐 ${escapeHtml(gig.time)}</div>
+                        ${gig.description ? `<div class="gig-description">${escapeHtml(gig.description)}</div>` : ''}
+                        ${position ? `<div class="lineup-position">🎤 Position #${position} in lineup</div>` : ''}
+                        ${booking.status === 'rejected' && booking.rejectionReason ? 
+                            `<div class="gig-description" style="color: #ff6666;">Reason: ${escapeHtml(booking.rejectionReason)}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const data = await apiCall('updateProfile');
+                if (data.success && data.profile) {
+                    document.getElementById('profile-name').value = data.profile.name || '';
+                    document.getElementById('profile-email').value = data.profile.email || currentUser?.email || '';
+                    document.getElementById('profile-phone').value = data.profile.phone || '';
+                    document.getElementById('profile-bio').value = data.profile.bio || '';
+                }
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+            }
+        }
+
+        // Save profile
+        async function saveProfile(e) {
+            e.preventDefault();
+            const messageEl = document.getElementById('profile-message');
+
+            const profileData = {
+                name: document.getElementById('profile-name').value,
+                phone: document.getElementById('profile-phone').value,
+                bio: document.getElementById('profile-bio').value,
+            };
+
+            try {
+                const data = await apiCall('updateProfile', {
+                    method: 'POST',
+                    body: JSON.stringify(profileData),
+                });
+
+                if (data.success) {
+                    messageEl.innerHTML = '<div class="message success">Profile saved successfully!</div>';
+                    setTimeout(() => messageEl.innerHTML = '', 3000);
+                } else {
+                    messageEl.innerHTML = `<div class="message error">${data.error}</div>`;
+                }
+            } catch (error) {
+                messageEl.innerHTML = '<div class="message error">Failed to save profile. Please try again.</div>';
+            }
+        }
+
+        // Request gig modal
+        function openRequestModal(gigId) {
+            selectedGigId = gigId;
+            const gig = allGigs.find(g => g.id === gigId);
+            
+            document.getElementById('modal-gig-details').innerHTML = `
+                <div class="gig-card" style="margin-bottom: 20px;">
+                    <div class="gig-date">${formatDate(gig.date)}</div>
+                    <div class="gig-venue">${escapeHtml(gig.venue)}</div>
+                    <div class="gig-time">🕐 ${escapeHtml(gig.time)}</div>
+                </div>
+            `;
+            
+            document.getElementById('request-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('request-modal').classList.remove('active');
+            selectedGigId = null;
+        }
+
+        async function submitRequest() {
+            if (!selectedGigId) return;
+
+            const message = document.getElementById('request-message').value;
+            const messageContainer = document.getElementById('message-container');
+
+            try {
+                const data = await apiCall('requestGigSpot', {
+                    method: 'POST',
+                    body: JSON.stringify({ gigId: selectedGigId, message }),
+                });
+
+                closeModal();
+
+                if (data.success) {
+                    messageContainer.innerHTML = '<div class="message success">Request submitted successfully! You\'ll be notified when it\'s reviewed.</div>';
+                    setTimeout(() => messageContainer.innerHTML = '', 5000);
+                    await loadMyGigs();
+                    renderGigs();
+                } else {
+                    messageContainer.innerHTML = `<div class="message error">${data.error}</div>`;
+                }
+            } catch (error) {
+                messageContainer.innerHTML = '<div class="message error">Failed to submit request. Please try again.</div>';
+            }
+        }
+
+        // Calendar
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthEl = document.getElementById('calendar-month');
+
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+
+            monthEl.textContent = currentMonth.toLocaleDateString('en-NZ', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+
+            // Get gigs for this month
+            const monthGigs = [...(myGigs.approved || []), ...(myGigs.pending || [])].filter(({ gig }) => {
+                if (!gig) return false;
+                const gigDate = new Date(gig.date);
+                return gigDate.getMonth() === month && gigDate.getFullYear() === year;
+            });
+
+            let html = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+                .map(day => `<div class="calendar-day-header">${day}</div>`)
+                .join('');
+
+            // Previous month days
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                html += `<div class="calendar-day other-month"><div class="calendar-day-number">${prevMonthDays - i}</div></div>`;
+            }
+
+            // Current month days
+            const today = new Date();
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayGigs = monthGigs.filter(({ gig }) => gig.date === dateStr);
+                
+                const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+                const hasGig = dayGigs.length > 0;
+                const hasPending = dayGigs.some(g => g.booking.status === 'pending');
+
+                html += `
+                    <div class="calendar-day ${isToday ? 'today' : ''} ${hasGig ? 'has-gig' : ''}">
+                        <div class="calendar-day-number">${day}</div>
+                        ${hasGig ? `<div class="calendar-gig-dot ${hasPending ? 'pending' : ''}"></div>` : ''}
+                    </div>
+                `;
+            }
+
+            // Next month days
+            const remainingDays = 42 - (startDay + lastDay.getDate());
+            for (let day = 1; day <= remainingDays; day++) {
+                html += `<div class="calendar-day other-month"><div class="calendar-day-number">${day}</div></div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const section = this.dataset.section;
+                
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(`section-${section}`).classList.add('active');
+            });
+        });
+
+        // My Gigs tabs
+        document.querySelectorAll('.my-gigs-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                myGigsTab = this.dataset.tab;
+                document.querySelectorAll('.my-gigs-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                renderMyGigs();
+            });
+        });
+
+        // Helper functions
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-NZ', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Close modal on outside click
+        document.getElementById('request-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Load data if user is already logged in
+        if (currentUser) {
+            loadAllData();
+        }
+    </script>
+</body>
+</html>

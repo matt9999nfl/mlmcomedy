@@ -1,0 +1,15 @@
+{
+  "name": "mlmcomedy",
+  "version": "1.0.0",
+  "description": "MLM Comedy - Christchurch's Premier Comedy Production Company",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
