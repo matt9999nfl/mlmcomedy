@@ -850,10 +850,12 @@
             }
         });
 
-        netlifyIdentity.on('login', user => {
+        netlifyIdentity.on('login', async user => {
             currentUser = user;
             updateUI();
             netlifyIdentity.close();
+            // Give Identity a moment to issue a JWT before admin check
+            await new Promise(res => setTimeout(res, 200));
             // Check if the logged-in user has admin access; if so, send them to admin dashboard
             checkAdminAndRedirect();
         });
@@ -906,13 +908,19 @@
 
         // API Helper
         async function apiCall(endpoint, options = {}) {
-            const token = await netlifyIdentity.currentUser()?.jwt();
+            let token = null;
+            try {
+                const userObj = netlifyIdentity.currentUser();
+                token = userObj ? await userObj.jwt() : null;
+            } catch (e) {
+                token = null;
+            }
             
             const response = await fetch(`/api/${endpoint}`, {
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                     ...options.headers,
                 },
             });
