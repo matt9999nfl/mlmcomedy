@@ -1136,7 +1136,13 @@
                 errorEl.textContent = 'Password reset email sent. Check your inbox.';
                 errorEl.style.display = 'block';
             } catch (err) {
-                errorEl.textContent = 'Failed to send reset email. Please try again.';
+                console.error('Password recovery error:', err);
+                // Check if user exists - if not, they need to be invited first
+                if (err.message && err.message.includes('User not found')) {
+                    errorEl.textContent = 'No account found with that email. Admin accounts must be invited via Netlify Identity first.';
+                } else {
+                    errorEl.textContent = 'Failed to send reset email. Ensure this email has an account in Netlify Identity.';
+                }
                 errorEl.style.display = 'block';
             }
         }
@@ -1200,7 +1206,51 @@
         }
 
         async function validateAdmin() {
-            // Try to make an admin-only API call to validate
+            const errorEl = document.getElementById('auth-error');
+            const notAdminEl = document.getElementById('not-admin-msg');
+            notAdminEl.style.display = 'none';
+            
+            // First run debug to see exactly what server receives
+            try {
+                const debug = await apiCall('adminDebug');
+                console.log('Admin Debug:', debug);
+                
+                if (debug.debug && !debug.result.isAdmin) {
+                    // Show detailed reason
+                    console.warn('Admin check failed:', debug.result.reason);
+                    
+                    // If no admin emails configured, that's the root issue
+                    if (debug.adminConfig.adminEmailCount === 0) {
+                        notAdminEl.innerHTML = '⚠️ No admin emails configured on server.<br>Set ADMIN_EMAIL or ADMIN_EMAILS in Netlify environment variables and redeploy.';
+                        notAdminEl.style.display = 'block';
+                        isAdmin = false;
+                        updateUI();
+                        return;
+                    }
+                    
+                    // If user email not in list
+                    if (debug.user && debug.user.email && !debug.result.isAdmin) {
+                        notAdminEl.innerHTML = `⚠️ ${debug.user.email} is not in the admin list.<br>Configured admins: ${debug.adminConfig.parsedAdminEmails.join(', ') || 'none'}`;
+                        notAdminEl.style.display = 'block';
+                        isAdmin = false;
+                        updateUI();
+                        return;
+                    }
+                    
+                    // If no user in context (token issue)
+                    if (!debug.clientContext.hasUser) {
+                        notAdminEl.innerHTML = '⚠️ Authentication token not validated by server.<br>Try signing out and back in.';
+                        notAdminEl.style.display = 'block';
+                        isAdmin = false;
+                        updateUI();
+                        return;
+                    }
+                }
+            } catch (debugErr) {
+                console.warn('Debug endpoint error:', debugErr);
+            }
+            
+            // Now try the actual admin API call
             try {
                 const response = await apiCall('getBookings?status=pending');
                 if (response.success) {
@@ -1211,10 +1261,12 @@
                 } else if (response.error === 'Admin access required') {
                     isAdmin = false;
                     updateUI();
-                    document.getElementById('not-admin-msg').style.display = 'block';
+                    notAdminEl.innerHTML = '⚠️ You are not authorized as an admin.<br>Please sign in with an admin account.';
+                    notAdminEl.style.display = 'block';
                     return;
                 }
             } catch (error) {
+                console.error('Admin validation error:', error);
                 // Network or token error: fall back to client-side email check
                 if (currentUser && checkIsAdmin(currentUser.email)) {
                     isAdmin = true;
@@ -1241,10 +1293,6 @@
                 authSection.style.display = 'flex';
                 dashboardContent.classList.remove('active');
             }
-        }
-
-        function logout() {
-            netlifyIdentity.logout();
         }
 
         // API Helper
