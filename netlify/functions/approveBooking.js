@@ -1,17 +1,11 @@
 // Admin approves or rejects a booking request
 const { initializeFirebase, admin } = require('./firebase-init');
-
-// Check if user is admin
-function isAdmin(user) {
-    const raw = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || '');
-    const adminEmails = raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-    return adminEmails.includes(user?.email?.toLowerCase());
-}
+const { checkAdmin } = require('./admin-check');
 
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Token',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Content-Type': 'application/json',
     };
@@ -29,15 +23,17 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { user } = context.clientContext || {};
+        const adminCheck = checkAdmin(event, context);
 
-        if (!user || !isAdmin(user)) {
+        if (!adminCheck.isAdmin) {
             return {
                 statusCode: 403,
                 headers,
                 body: JSON.stringify({ success: false, error: 'Admin access required' }),
             };
         }
+        
+        const user = { email: adminCheck.email };
 
         const { bookingId, action, rejectionReason } = JSON.parse(event.body);
 

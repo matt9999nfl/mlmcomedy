@@ -6,9 +6,6 @@
     <title>Admin Dashboard - MLM Comedy</title>
     <meta name="description" content="MLM Comedy Admin Dashboard - Manage gigs, bookings, and comedians.">
     
-    <!-- GoTrue JS for a separate admin-only login flow -->
-    <script src="https://cdn.jsdelivr.net/npm/gotrue-js@2.1.0/dist/gotrue.min.js"></script>
-    
     <!-- Sortable.js for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     
@@ -787,44 +784,12 @@
                     <input type="password" id="admin-password" required placeholder="••••••••">
                 </div>
                     <button type="submit" class="auth-btn">Admin Sign In</button>
-                    <div style="margin-top: 10px;">
-                        <a href="#" onclick="startPasswordReset(); return false;" style="color:#ff00ff;">Forgot password?</a>
-                    </div>
             </form>
             <p class="not-admin" id="not-admin-msg" style="display: none;">
                 ⚠️ You are not authorized as an admin.<br>
                 Please sign in with an admin account.
             </p>
             <div id="auth-error" class="message error" style="display:none; margin-top: 15px;"></div>
-
-                <!-- Invite / Recovery flows -->
-                <div id="invite-section" style="display:none; margin-top: 20px; text-align:left;">
-                    <h3 style="color:#ff00ff; margin-bottom:10px;">Complete Invitation</h3>
-                    <p style="color:#888; margin-bottom:10px;">Set a password to activate your admin account.</p>
-                    <div class="form-group">
-                        <label for="invite-password">New Password</label>
-                        <input type="password" id="invite-password" placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label for="invite-password2">Confirm Password</label>
-                        <input type="password" id="invite-password2" placeholder="••••••••">
-                    </div>
-                    <button class="btn btn-primary" onclick="completeInvite()">Set Password</button>
-                </div>
-
-                <div id="recovery-section" style="display:none; margin-top: 20px; text-align:left;">
-                    <h3 style="color:#ff00ff; margin-bottom:10px;">Reset Password</h3>
-                    <p style="color:#888; margin-bottom:10px;">Enter a new password for your admin account.</p>
-                    <div class="form-group">
-                        <label for="recovery-password">New Password</label>
-                        <input type="password" id="recovery-password" placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label for="recovery-password2">Confirm Password</label>
-                        <input type="password" id="recovery-password2" placeholder="••••••••">
-                    </div>
-                    <button class="btn btn-primary" onclick="completeRecovery()">Update Password</button>
-                </div>
         </div>
     </div>
 
@@ -1053,6 +1018,7 @@
     <script>
         // Global state
         let currentUser = null;
+        let adminToken = localStorage.getItem('adminToken') || null;
         let isAdmin = false;
         let allGigs = [];
         let allBookings = [];
@@ -1060,46 +1026,34 @@
         let currentLineupGig = null;
         let lineupSortable = null;
 
-        // Client-side fallback admin check (used only if server validation fails)
-        const CLIENT_ADMIN_EMAILS = ['matt@mlmcomedy.com'];
-        function checkIsAdmin(email) {
-            if (!email) return false;
-            return CLIENT_ADMIN_EMAILS.includes(String(email).toLowerCase());
+        // Check for existing session on page load
+        if (adminToken) {
+            verifyExistingSession();
         }
 
-        // Separate admin auth using GoTrue (Netlify Identity API)
-        const auth = new GoTrue({
-            APIUrl: `${window.location.origin}/.netlify/identity`,
-            audience: '',
-            setCookie: true,
-        });
-
-        // Parse hash params for invite/recovery/confirmation tokens
-        function parseHashParams() {
-            const hash = window.location.hash.replace('#', '');
-            const params = {};
-            hash.split('&').forEach(p => {
-                const [k, v] = p.split('=');
-                if (k) params[k] = decodeURIComponent(v || '');
-            });
-            return params;
-        }
-
-        const hashParams = parseHashParams();
-
-        // If invite/recovery token is present, show appropriate section
-        if (hashParams.invite_token) {
-            document.getElementById('admin-login-form').style.display = 'none';
-            document.getElementById('invite-section').style.display = 'block';
-        } else if (hashParams.recovery_token) {
-            document.getElementById('admin-login-form').style.display = 'none';
-            document.getElementById('recovery-section').style.display = 'block';
-        }
-
-        // Load existing session if present
-        currentUser = auth.currentUser();
-        if (currentUser) {
-            validateAdmin();
+        async function verifyExistingSession() {
+            try {
+                const response = await fetch('/api/adminAuth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'verify', token: adminToken }),
+                });
+                const data = await response.json();
+                if (data.success && data.isAdmin) {
+                    currentUser = { email: data.email };
+                    isAdmin = true;
+                    updateUI();
+                    loadAllData();
+                } else {
+                    // Token invalid, clear it
+                    localStorage.removeItem('adminToken');
+                    adminToken = null;
+                }
+            } catch (err) {
+                console.error('Session verify error:', err);
+                localStorage.removeItem('adminToken');
+                adminToken = null;
+            }
         }
 
         async function adminLogin(e) {
@@ -1107,176 +1061,42 @@
             const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value;
             const errorEl = document.getElementById('auth-error');
+            const notAdminEl = document.getElementById('not-admin-msg');
             errorEl.style.display = 'none';
-            errorEl.textContent = '';
+            notAdminEl.style.display = 'none';
 
             try {
-                const user = await auth.login(email, password, true);
-                currentUser = user;
-                // Stay on admin and validate server-side
-                await validateAdmin();
-            } catch (err) {
-                errorEl.textContent = 'Sign in failed. Please check your email or password.';
-                errorEl.style.display = 'block';
-            }
-        }
-
-        async function startPasswordReset() {
-            const email = document.getElementById('admin-email').value.trim();
-            const errorEl = document.getElementById('auth-error');
-            if (!email) {
-                errorEl.textContent = 'Enter your admin email to reset password.';
-                errorEl.style.display = 'block';
-                return;
-            }
-            try {
-                await auth.requestPasswordRecovery(email);
-                errorEl.classList.remove('error');
-                errorEl.classList.add('success');
-                errorEl.textContent = 'Password reset email sent. Check your inbox.';
-                errorEl.style.display = 'block';
-            } catch (err) {
-                console.error('Password recovery error:', err);
-                // Check if user exists - if not, they need to be invited first
-                if (err.message && err.message.includes('User not found')) {
-                    errorEl.textContent = 'No account found with that email. Admin accounts must be invited via Netlify Identity first.';
+                const response = await fetch('/api/adminAuth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'login', email, password }),
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    currentUser = { email: data.email };
+                    isAdmin = true;
+                    updateUI();
+                    loadAllData();
                 } else {
-                    errorEl.textContent = 'Failed to send reset email. Ensure this email has an account in Netlify Identity.';
+                    errorEl.textContent = data.error || 'Sign in failed.';
+                    errorEl.style.display = 'block';
                 }
-                errorEl.style.display = 'block';
-            }
-        }
-
-        async function completeInvite() {
-            const pwd1 = document.getElementById('invite-password').value;
-            const pwd2 = document.getElementById('invite-password2').value;
-            const errorEl = document.getElementById('auth-error');
-            errorEl.style.display = 'none';
-            if (!pwd1 || pwd1 !== pwd2) {
-                errorEl.textContent = 'Passwords do not match.';
-                errorEl.style.display = 'block';
-                return;
-            }
-            try {
-                const res = await auth.acceptInvite(hashParams.invite_token, pwd1);
-                currentUser = res;
-                await validateAdmin();
             } catch (err) {
-                errorEl.textContent = 'Failed to complete invitation. Try resetting your password.';
+                console.error('Login error:', err);
+                errorEl.textContent = 'Connection error. Please try again.';
                 errorEl.style.display = 'block';
             }
         }
 
-        async function completeRecovery() {
-            const pwd1 = document.getElementById('recovery-password').value;
-            const pwd2 = document.getElementById('recovery-password2').value;
-            const errorEl = document.getElementById('auth-error');
-            errorEl.style.display = 'none';
-            if (!pwd1 || pwd1 !== pwd2) {
-                errorEl.textContent = 'Passwords do not match.';
-                errorEl.style.display = 'block';
-                return;
-            }
-            try {
-                await auth.recover(hashParams.recovery_token, pwd1);
-                errorEl.classList.remove('error');
-                errorEl.classList.add('success');
-                errorEl.textContent = 'Password updated. Please sign in.';
-                errorEl.style.display = 'block';
-                document.getElementById('recovery-section').style.display = 'none';
-                document.getElementById('admin-login-form').style.display = 'block';
-                window.location.hash = ''; // clear token
-            } catch (err) {
-                errorEl.textContent = 'Failed to update password. Try again.';
-                errorEl.style.display = 'block';
-            }
-        }
-
-        async function logout() {
-            try {
-                if (currentUser && typeof currentUser.logout === 'function') {
-                    await currentUser.logout();
-                } else if (typeof auth.logout === 'function') {
-                    await auth.logout();
-                }
-            } catch (_) {}
+        function logout() {
+            localStorage.removeItem('adminToken');
+            adminToken = null;
             currentUser = null;
             isAdmin = false;
             updateUI();
-        }
-
-        async function validateAdmin() {
-            const errorEl = document.getElementById('auth-error');
-            const notAdminEl = document.getElementById('not-admin-msg');
-            notAdminEl.style.display = 'none';
-            
-            // First run debug to see exactly what server receives
-            try {
-                const debug = await apiCall('adminDebug');
-                console.log('Admin Debug:', debug);
-                
-                if (debug.debug && !debug.result.isAdmin) {
-                    // Show detailed reason
-                    console.warn('Admin check failed:', debug.result.reason);
-                    
-                    // If no admin emails configured, that's the root issue
-                    if (debug.adminConfig.adminEmailCount === 0) {
-                        notAdminEl.innerHTML = '⚠️ No admin emails configured on server.<br>Set ADMIN_EMAIL or ADMIN_EMAILS in Netlify environment variables and redeploy.';
-                        notAdminEl.style.display = 'block';
-                        isAdmin = false;
-                        updateUI();
-                        return;
-                    }
-                    
-                    // If user email not in list
-                    if (debug.user && debug.user.email && !debug.result.isAdmin) {
-                        notAdminEl.innerHTML = `⚠️ ${debug.user.email} is not in the admin list.<br>Configured admins: ${debug.adminConfig.parsedAdminEmails.join(', ') || 'none'}`;
-                        notAdminEl.style.display = 'block';
-                        isAdmin = false;
-                        updateUI();
-                        return;
-                    }
-                    
-                    // If no user in context (token issue)
-                    if (!debug.clientContext.hasUser) {
-                        notAdminEl.innerHTML = '⚠️ Authentication token not validated by server.<br>Try signing out and back in.';
-                        notAdminEl.style.display = 'block';
-                        isAdmin = false;
-                        updateUI();
-                        return;
-                    }
-                }
-            } catch (debugErr) {
-                console.warn('Debug endpoint error:', debugErr);
-            }
-            
-            // Now try the actual admin API call
-            try {
-                const response = await apiCall('getBookings?status=pending');
-                if (response.success) {
-                    isAdmin = true;
-                    updateUI();
-                    loadAllData();
-                    return;
-                } else if (response.error === 'Admin access required') {
-                    isAdmin = false;
-                    updateUI();
-                    notAdminEl.innerHTML = '⚠️ You are not authorized as an admin.<br>Please sign in with an admin account.';
-                    notAdminEl.style.display = 'block';
-                    return;
-                }
-            } catch (error) {
-                console.error('Admin validation error:', error);
-                // Network or token error: fall back to client-side email check
-                if (currentUser && checkIsAdmin(currentUser.email)) {
-                    isAdmin = true;
-                    updateUI();
-                    loadAllData();
-                    return;
-                }
-                isAdmin = false;
-                updateUI();
-            }
         }
 
         function updateUI() {
@@ -1286,8 +1106,7 @@
             if (currentUser && isAdmin) {
                 authSection.style.display = 'none';
                 dashboardContent.classList.add('active');
-                document.getElementById('user-name').textContent = 
-                    currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                document.getElementById('user-name').textContent = currentUser.email.split('@')[0];
                 document.getElementById('user-email').textContent = currentUser.email;
             } else {
                 authSection.style.display = 'flex';
@@ -1295,20 +1114,13 @@
             }
         }
 
-        // API Helper
+        // API Helper - uses admin token
         async function apiCall(endpoint, options = {}) {
-            let token = null;
-            try {
-                token = currentUser ? await currentUser.jwt() : null;
-            } catch (e) {
-                token = null;
-            }
-            
             const response = await fetch(`/api/${endpoint}`, {
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                    ...(adminToken ? { 'X-Admin-Token': adminToken } : {}),
                     ...options.headers,
                 },
             });

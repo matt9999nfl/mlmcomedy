@@ -1,11 +1,6 @@
 // Send email notifications via Resend API
 const { initializeFirebase } = require('./firebase-init');
-
-function isAdmin(user) {
-    const raw = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || '');
-    const adminEmails = raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-    return adminEmails.includes(user?.email?.toLowerCase());
-}
+const { checkAdmin } = require('./admin-check');
 
 async function sendEmail(to, subject, html) {
     const response = await fetch('https://api.resend.com/emails', {
@@ -144,7 +139,7 @@ const templates = {
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Token',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Content-Type': 'application/json',
     };
@@ -162,9 +157,9 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { user } = context.clientContext || {};
+        const adminCheck = checkAdmin(event, context);
 
-        if (!user || !isAdmin(user)) {
+        if (!adminCheck.isAdmin) {
             return {
                 statusCode: 403,
                 headers,

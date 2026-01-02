@@ -583,15 +583,6 @@
             logo.style.animation = 'glitch 2s infinite';
         });
 
-        // Redirect Netlify Identity tokens to admin page if present
-        (function redirectIdentityTokens() {
-            const hash = window.location.hash;
-            if (!hash) return;
-            if (hash.includes('invite_token') || hash.includes('recovery_token') || hash.includes('confirmation_token')) {
-                window.location.href = 'admin.html' + hash;
-            }
-        })();
-
         // Automatically load all .show.png files for Past Shows
         async function loadPastShows() {
             // List of show poster files (add new .show.png files here or use a directory listing)
