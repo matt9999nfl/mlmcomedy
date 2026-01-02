@@ -1017,11 +1017,11 @@
         let currentLineupGig = null;
         let lineupSortable = null;
 
-        // Admin email check (this should match your environment variable)
+        // Client-side fallback admin check (used only if server validation fails)
+        const CLIENT_ADMIN_EMAILS = ['matt@mlmcomedy.com'];
         function checkIsAdmin(email) {
-            // In production, this is handled server-side
-            // This is just for UI purposes
-            return true; // Let the server validate
+            if (!email) return false;
+            return CLIENT_ADMIN_EMAILS.includes(String(email).toLowerCase());
         }
 
         // Initialize Netlify Identity
@@ -1054,12 +1054,21 @@
                     isAdmin = true;
                     updateUI();
                     loadAllData();
+                    return;
                 } else if (response.error === 'Admin access required') {
                     isAdmin = false;
                     updateUI();
                     document.getElementById('not-admin-msg').style.display = 'block';
+                    return;
                 }
             } catch (error) {
+                // Network or token error: fall back to client-side email check
+                if (currentUser && checkIsAdmin(currentUser.email)) {
+                    isAdmin = true;
+                    updateUI();
+                    loadAllData();
+                    return;
+                }
                 isAdmin = false;
                 updateUI();
             }
@@ -1087,13 +1096,14 @@
 
         // API Helper
         async function apiCall(endpoint, options = {}) {
-            const token = await netlifyIdentity.currentUser()?.jwt();
+            const userObj = netlifyIdentity.currentUser();
+            const token = userObj ? await userObj.jwt() : null;
             
             const response = await fetch(`/api/${endpoint}`, {
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                     ...options.headers,
                 },
             });
