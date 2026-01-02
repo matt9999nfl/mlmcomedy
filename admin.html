@@ -1116,16 +1116,33 @@
 
         // API Helper - uses admin token
         async function apiCall(endpoint, options = {}) {
-            const response = await fetch(`/api/${endpoint}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(adminToken ? { 'X-Admin-Token': adminToken } : {}),
-                    ...options.headers,
-                },
-            });
+            const url = `/api/${endpoint}`;
+            const method = options.method || 'GET';
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(adminToken ? { 'X-Admin-Token': adminToken } : {}),
+                        ...options.headers,
+                    },
+                });
 
-            return response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (parseErr) {
+                    console.error('API response parse error', { endpoint, method, status: response.status, parseErr });
+                    throw parseErr;
+                }
+
+                const bodyPreview = options.body ? (options.body.length > 500 ? options.body.slice(0, 500) + '…' : options.body) : null;
+                console.log('API call', { endpoint, method, status: response.status, body: bodyPreview, data });
+                return data;
+            } catch (err) {
+                console.error('API call error', { endpoint, method, err });
+                throw err;
+            }
         }
 
         // Load all data
@@ -1448,6 +1465,7 @@
 
             try {
                 let response;
+                console.log('SaveGig submit', { action: gigId ? 'update' : 'create', gigId: gigId || null, gigData });
                 if (gigId) {
                     response = await apiCall('createGig', {
                         method: 'PUT',
@@ -1459,7 +1477,7 @@
                         body: JSON.stringify(gigData),
                     });
                 }
-
+                console.log('SaveGig response', response);
                 if (response.success) {
                     closeGigModal();
                     showMessage('success', gigId ? 'Gig updated successfully!' : 'Gig created successfully!');
@@ -1475,9 +1493,11 @@
                     await loadGigs();
                     updateStats();
                 } else {
-                    showMessage('error', response.error);
+                    console.error('SaveGig error', response);
+                    showMessage('error', response.error || 'Failed to save gig.');
                 }
             } catch (error) {
+                console.error('SaveGig exception', error);
                 showMessage('error', 'Failed to save gig. Please try again.');
             }
         }
@@ -1488,20 +1508,23 @@
             }
 
             try {
+                console.log('DeleteGig submit', { gigId });
                 const response = await apiCall('createGig', {
                     method: 'DELETE',
                     body: JSON.stringify({ gigId }),
                 });
-
+                console.log('DeleteGig response', response);
                 if (response.success) {
                     showMessage('success', 'Gig deleted successfully!');
                     await loadGigs();
                     await loadBookings();
                     updateStats();
                 } else {
-                    showMessage('error', response.error);
+                    console.error('DeleteGig error', response);
+                    showMessage('error', response.error || 'Failed to delete gig.');
                 }
             } catch (error) {
+                console.error('DeleteGig exception', error);
                 showMessage('error', 'Failed to delete gig. Please try again.');
             }
         }

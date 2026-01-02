@@ -15,7 +15,11 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        console.log('createGig invoked', { method: event.httpMethod, hasBody: !!event.body });
+        const hasAdminToken = !!(event.headers['x-admin-token'] || event.headers['X-Admin-Token']);
+        console.log('Auth header presence', { hasAdminToken });
         const adminCheck = checkAdmin(event, context);
+        console.log('Admin check result', adminCheck);
 
         if (!adminCheck.isAdmin) {
             return {
@@ -28,7 +32,9 @@ exports.handler = async (event, context) => {
         const user = { email: adminCheck.email };
 
         const db = initializeFirebase();
+        console.log('Firebase initialized: OK');
         const body = JSON.parse(event.body);
+        console.log('Request body parsed', { keys: Object.keys(body || {}) });
 
         // Handle different HTTP methods
         if (event.httpMethod === 'POST') {
@@ -36,6 +42,13 @@ exports.handler = async (event, context) => {
             const { venue, date, time, slotsTotal, description, notifyComedians } = body;
 
             if (!venue || !date || !time || !slotsTotal) {
+                const missing = [
+                    !venue ? 'venue' : null,
+                    !date ? 'date' : null,
+                    !time ? 'time' : null,
+                    !slotsTotal ? 'slotsTotal' : null,
+                ].filter(Boolean);
+                console.warn('Create gig validation failed', { missing });
                 return {
                     statusCode: 400,
                     headers,
@@ -59,6 +72,7 @@ exports.handler = async (event, context) => {
             };
 
             const gigRef = await db.collection('gigs').add(gigData);
+            console.log('Gig created', { gigId: gigRef.id, venue, date, time });
 
             return {
                 statusCode: 200,
@@ -106,6 +120,7 @@ exports.handler = async (event, context) => {
                         : updates[field];
                 }
             });
+            console.log('Gig update payload', { gigId, updateKeys: Object.keys(cleanUpdates) });
 
             cleanUpdates.updatedAt = admin.firestore.FieldValue.serverTimestamp();
             cleanUpdates.updatedBy = user.email;
@@ -150,6 +165,7 @@ exports.handler = async (event, context) => {
             const bookingsSnapshot = await db.collection('bookings')
                 .where('gigId', '==', gigId)
                 .get();
+            console.log('Delete gig: bookings to delete', { gigId, count: bookingsSnapshot.size });
 
             const batch = db.batch();
             bookingsSnapshot.forEach(doc => {
@@ -176,10 +192,11 @@ exports.handler = async (event, context) => {
         };
     } catch (error) {
         console.error('Error managing gig:', error);
+        if (error && error.stack) console.error('Stack:', error.stack);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: 'Failed to process request' }),
+            body: JSON.stringify({ success: false, error: error?.message || 'Failed to process request' }),
         };
     }
 };

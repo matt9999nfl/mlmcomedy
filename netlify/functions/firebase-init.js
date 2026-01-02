@@ -6,12 +6,28 @@ let db = null;
 function initializeFirebase() {
     if (db) return db;
 
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+
+    if (!projectId || !clientEmail || !privateKeyRaw) {
+        const missing = [
+            !projectId ? 'FIREBASE_PROJECT_ID' : null,
+            !clientEmail ? 'FIREBASE_CLIENT_EMAIL' : null,
+            !privateKeyRaw ? 'FIREBASE_PRIVATE_KEY' : null,
+        ].filter(Boolean).join(', ');
+        console.error('Firebase init error: missing env vars', { missing });
+        throw new Error(`Firebase credentials missing: ${missing}. Configure environment variables in Netlify.`);
+    }
+
+    const privateKey = privateKeyRaw.replace(/\n/g, '\n');
+
     if (!admin.apps.length) {
         admin.initializeApp({
             credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+                projectId,
+                clientEmail,
+                privateKey,
             }),
         });
     }
