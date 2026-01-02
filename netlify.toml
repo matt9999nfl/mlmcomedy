@@ -5,6 +5,9 @@
 [functions]
   node_bundler = "esbuild"
 
+[context.production.environment]
+  NODE_VERSION = "18"
+
 # Redirect for Netlify Identity
 [[redirects]]
   from = "/api/*"

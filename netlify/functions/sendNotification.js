@@ -303,10 +303,11 @@ exports.handler = async (event, context) => {
         };
     } catch (error) {
         console.error('Error sending notification:', error);
+        console.error('Stack:', error?.stack);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: 'Failed to send notification' }),
+            body: JSON.stringify({ success: false, error: error?.message || 'Failed to send notification' }),
         };
     }
 };

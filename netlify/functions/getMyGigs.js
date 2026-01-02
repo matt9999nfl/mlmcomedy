@@ -82,10 +82,11 @@ exports.handler = async (event, context) => {
         };
     } catch (error) {
         console.error('Error fetching comedian gigs:', error);
+        console.error('Stack:', error?.stack);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: 'Failed to fetch your gigs' }),
+            body: JSON.stringify({ success: false, error: error?.message || 'Failed to fetch your gigs' }),
         };
     }
 };

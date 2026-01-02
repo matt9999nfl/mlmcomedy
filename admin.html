@@ -1672,28 +1672,42 @@
         // Booking actions
         async function approveBooking(bookingId) {
             try {
+                console.log('approveBooking: starting', { bookingId });
                 const response = await apiCall('approveBooking', {
                     method: 'POST',
                     body: JSON.stringify({ bookingId, action: 'approve' }),
                 });
+                console.log('approveBooking: response', response);
 
                 if (response.success) {
                     showMessage('success', 'Booking approved!');
                     
-                    // Send notification
-                    await apiCall('sendNotification', {
-                        method: 'POST',
-                        body: JSON.stringify({ type: 'booking_approved', bookingId }),
-                    });
+                    // Send notification (don't fail if this errors)
+                    try {
+                        console.log('approveBooking: sending notification');
+                        const notifResponse = await apiCall('sendNotification', {
+                            method: 'POST',
+                            body: JSON.stringify({ type: 'booking_approved', bookingId }),
+                        });
+                        console.log('approveBooking: notification response', notifResponse);
+                        if (!notifResponse.success) {
+                            console.warn('Notification failed:', notifResponse.error);
+                            showMessage('warning', `Booking approved but email failed: ${notifResponse.error}`);
+                        }
+                    } catch (notifErr) {
+                        console.error('Notification error:', notifErr);
+                        showMessage('warning', 'Booking approved but email notification failed');
+                    }
 
                     await loadBookings();
                     await loadGigs();
                     updateStats();
                     renderRecentRequests();
                 } else {
-                    showMessage('error', response.error);
+                    showMessage('error', response.error || 'Failed to approve booking');
                 }
             } catch (error) {
+                console.error('approveBooking error:', error);
                 showMessage('error', 'Failed to approve booking. Please try again.');
             }
         }
