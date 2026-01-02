@@ -28,10 +28,41 @@ function initializeFirebase() {
         }
         // Convert escaped newlines/carriage returns to real ones
         key = key.replace(/\\n/g, '\n').replace(/\\r/g, '\r');
+        
+        // Check for PEM header/footer
+        const hasHeader = key.includes('-----BEGIN');
+        const hasFooter = key.includes('-----END');
+        
+        // If missing headers, try to reconstruct (common when copy-pasting just the base64 content)
+        if (!hasHeader || !hasFooter) {
+            // Remove any existing partial headers/whitespace and get just the base64 content
+            let base64Content = key
+                .replace(/-----BEGIN[^-]*-----/g, '')
+                .replace(/-----END[^-]*-----/g, '')
+                .replace(/[\r\n\s]/g, '');
+            
+            // Only attempt reconstruction if we have substantial base64 content
+            if (base64Content.length > 100) {
+                console.log('Private key missing PEM headers, attempting to reconstruct...');
+                // Format as proper PEM with 64-char lines
+                const lines = base64Content.match(/.{1,64}/g) || [];
+                key = '-----BEGIN PRIVATE KEY-----\n' + lines.join('\n') + '\n-----END PRIVATE KEY-----\n';
+            }
+        }
+        
         return key;
     }
 
     const privateKey = normalizePrivateKey(privateKeyRaw);
+    
+    // Debug: log key structure (not the actual key!)
+    console.log('Private key check', {
+        length: privateKey.length,
+        hasBeginHeader: privateKey.includes('-----BEGIN PRIVATE KEY-----'),
+        hasEndFooter: privateKey.includes('-----END PRIVATE KEY-----'),
+        newlineCount: (privateKey.match(/\n/g) || []).length,
+        preview: privateKey.slice(0, 40) + '...',
+    });
 
     if (!admin.apps.length) {
         try {
