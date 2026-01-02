@@ -786,13 +786,45 @@
                     <label for="admin-password">Password</label>
                     <input type="password" id="admin-password" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="auth-btn">Admin Sign In</button>
+                    <button type="submit" class="auth-btn">Admin Sign In</button>
+                    <div style="margin-top: 10px;">
+                        <a href="#" onclick="startPasswordReset(); return false;" style="color:#ff00ff;">Forgot password?</a>
+                    </div>
             </form>
             <p class="not-admin" id="not-admin-msg" style="display: none;">
                 ⚠️ You are not authorized as an admin.<br>
                 Please sign in with an admin account.
             </p>
             <div id="auth-error" class="message error" style="display:none; margin-top: 15px;"></div>
+
+                <!-- Invite / Recovery flows -->
+                <div id="invite-section" style="display:none; margin-top: 20px; text-align:left;">
+                    <h3 style="color:#ff00ff; margin-bottom:10px;">Complete Invitation</h3>
+                    <p style="color:#888; margin-bottom:10px;">Set a password to activate your admin account.</p>
+                    <div class="form-group">
+                        <label for="invite-password">New Password</label>
+                        <input type="password" id="invite-password" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label for="invite-password2">Confirm Password</label>
+                        <input type="password" id="invite-password2" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" onclick="completeInvite()">Set Password</button>
+                </div>
+
+                <div id="recovery-section" style="display:none; margin-top: 20px; text-align:left;">
+                    <h3 style="color:#ff00ff; margin-bottom:10px;">Reset Password</h3>
+                    <p style="color:#888; margin-bottom:10px;">Enter a new password for your admin account.</p>
+                    <div class="form-group">
+                        <label for="recovery-password">New Password</label>
+                        <input type="password" id="recovery-password" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label for="recovery-password2">Confirm Password</label>
+                        <input type="password" id="recovery-password2" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" onclick="completeRecovery()">Update Password</button>
+                </div>
         </div>
     </div>
 
@@ -1042,6 +1074,28 @@
             setCookie: true,
         });
 
+        // Parse hash params for invite/recovery/confirmation tokens
+        function parseHashParams() {
+            const hash = window.location.hash.replace('#', '');
+            const params = {};
+            hash.split('&').forEach(p => {
+                const [k, v] = p.split('=');
+                if (k) params[k] = decodeURIComponent(v || '');
+            });
+            return params;
+        }
+
+        const hashParams = parseHashParams();
+
+        // If invite/recovery token is present, show appropriate section
+        if (hashParams.invite_token) {
+            document.getElementById('admin-login-form').style.display = 'none';
+            document.getElementById('invite-section').style.display = 'block';
+        } else if (hashParams.recovery_token) {
+            document.getElementById('admin-login-form').style.display = 'none';
+            document.getElementById('recovery-section').style.display = 'block';
+        }
+
         // Load existing session if present
         currentUser = auth.currentUser();
         if (currentUser) {
@@ -1063,6 +1117,71 @@
                 await validateAdmin();
             } catch (err) {
                 errorEl.textContent = 'Sign in failed. Please check your email or password.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function startPasswordReset() {
+            const email = document.getElementById('admin-email').value.trim();
+            const errorEl = document.getElementById('auth-error');
+            if (!email) {
+                errorEl.textContent = 'Enter your admin email to reset password.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            try {
+                await auth.requestPasswordRecovery(email);
+                errorEl.classList.remove('error');
+                errorEl.classList.add('success');
+                errorEl.textContent = 'Password reset email sent. Check your inbox.';
+                errorEl.style.display = 'block';
+            } catch (err) {
+                errorEl.textContent = 'Failed to send reset email. Please try again.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function completeInvite() {
+            const pwd1 = document.getElementById('invite-password').value;
+            const pwd2 = document.getElementById('invite-password2').value;
+            const errorEl = document.getElementById('auth-error');
+            errorEl.style.display = 'none';
+            if (!pwd1 || pwd1 !== pwd2) {
+                errorEl.textContent = 'Passwords do not match.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            try {
+                const res = await auth.acceptInvite(hashParams.invite_token, pwd1);
+                currentUser = res;
+                await validateAdmin();
+            } catch (err) {
+                errorEl.textContent = 'Failed to complete invitation. Try resetting your password.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function completeRecovery() {
+            const pwd1 = document.getElementById('recovery-password').value;
+            const pwd2 = document.getElementById('recovery-password2').value;
+            const errorEl = document.getElementById('auth-error');
+            errorEl.style.display = 'none';
+            if (!pwd1 || pwd1 !== pwd2) {
+                errorEl.textContent = 'Passwords do not match.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            try {
+                await auth.recover(hashParams.recovery_token, pwd1);
+                errorEl.classList.remove('error');
+                errorEl.classList.add('success');
+                errorEl.textContent = 'Password updated. Please sign in.';
+                errorEl.style.display = 'block';
+                document.getElementById('recovery-section').style.display = 'none';
+                document.getElementById('admin-login-form').style.display = 'block';
+                window.location.hash = ''; // clear token
+            } catch (err) {
+                errorEl.textContent = 'Failed to update password. Try again.';
                 errorEl.style.display = 'block';
             }
         }
