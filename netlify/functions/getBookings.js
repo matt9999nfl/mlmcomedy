@@ -2,7 +2,8 @@
 const { initializeFirebase } = require('./firebase-init');
 
 function isAdmin(user) {
-    const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase());
+    const raw = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || '');
+    const adminEmails = raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
     return adminEmails.includes(user?.email?.toLowerCase());
 }
 
