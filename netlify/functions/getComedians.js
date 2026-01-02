@@ -26,7 +26,10 @@ exports.handler = async (event, context) => {
         }
 
         const db = initializeFirebase();
-        const snapshot = await db.collection('comedians').orderBy('name', 'asc').get();
+        console.log('getComedians: querying comedians collection');
+        // Removed orderBy to avoid index requirement - sort in memory instead
+        const snapshot = await db.collection('comedians').get();
+        console.log('getComedians: found documents', { count: snapshot.size });
 
         const comedians = [];
         snapshot.forEach(doc => {
@@ -35,6 +38,10 @@ exports.handler = async (event, context) => {
                 ...doc.data(),
             });
         });
+
+        // Sort by name in memory (handles missing name field gracefully)
+        comedians.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        console.log('getComedians: returning comedians', { count: comedians.length });
 
         return {
             statusCode: 200,

@@ -3,14 +3,30 @@ const { initializeFirebase } = require('./firebase-init');
 const { checkAdmin } = require('./admin-check');
 
 async function sendEmail(to, subject, html) {
+    const apiKey = process.env.RESEND_API_KEY;
+    const fromEmail = process.env.FROM_EMAIL || 'MLM Comedy <matt@mlmcomedy.com>';
+    
+    console.log('sendEmail: attempting to send', { 
+        to, 
+        subject, 
+        from: fromEmail,
+        hasApiKey: !!apiKey,
+        apiKeyPreview: apiKey ? apiKey.slice(0, 8) + '...' : 'MISSING'
+    });
+    
+    if (!apiKey) {
+        console.error('sendEmail: RESEND_API_KEY is not set!');
+        throw new Error('Email service not configured - RESEND_API_KEY missing');
+    }
+    
     const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            from: process.env.FROM_EMAIL || 'MLM Comedy <noreply@mlmcomedy.co.nz>',
+            from: fromEmail,
             to: Array.isArray(to) ? to : [to],
             subject,
             html,
@@ -19,10 +35,13 @@ async function sendEmail(to, subject, html) {
 
     if (!response.ok) {
         const error = await response.text();
+        console.error('sendEmail: Resend API error', { status: response.status, error });
         throw new Error(`Resend API error: ${error}`);
     }
 
-    return response.json();
+    const result = await response.json();
+    console.log('sendEmail: success', { id: result.id });
+    return result;
 }
 
 function formatDate(dateStr) {
@@ -168,6 +187,7 @@ exports.handler = async (event, context) => {
         }
 
         const { type, gigId, bookingId, comedianEmail } = JSON.parse(event.body);
+        console.log('sendNotification: request', { type, gigId, bookingId, comedianEmail });
 
         if (!type) {
             return {
@@ -181,6 +201,7 @@ exports.handler = async (event, context) => {
         let emailsSent = 0;
 
         if (type === 'new_gig' && gigId) {
+            console.log('sendNotification: new_gig notification for', gigId);
             // Notify all comedians about new gig
             const gigDoc = await db.collection('gigs').doc(gigId).get();
             if (!gigDoc.exists) {
@@ -199,6 +220,7 @@ exports.handler = async (event, context) => {
                 const comedian = doc.data();
                 if (comedian.email) emails.push(comedian.email);
             });
+            console.log('sendNotification: found comedian emails', { count: emails.length });
 
             if (emails.length > 0) {
                 const template = templates.new_gig(gig);
@@ -208,6 +230,7 @@ exports.handler = async (event, context) => {
         }
 
         if (type === 'booking_approved' && bookingId) {
+            console.log('sendNotification: booking_approved notification for', bookingId);
             // Notify comedian about approved booking
             const bookingDoc = await db.collection('bookings').doc(bookingId).get();
             if (!bookingDoc.exists) {

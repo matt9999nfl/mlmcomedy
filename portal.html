@@ -348,6 +348,33 @@
             background: linear-gradient(45deg, #00ff00, #00aa00);
         }
 
+        /* Gig Status Messages */
+        .gig-status {
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .gig-status.approved {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            color: #00ff00;
+        }
+
+        .gig-status.pending {
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid rgba(255, 170, 0, 0.5);
+            color: #ffaa00;
+        }
+
+        .gig-status.rejected {
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            color: #ff6666;
+        }
+
         /* Calendar View */
         .calendar-container {
             background: rgba(20, 20, 20, 0.9);
@@ -913,10 +940,15 @@
                 const userObj = netlifyIdentity.currentUser();
                 token = userObj ? await userObj.jwt() : null;
             } catch (e) {
+                console.warn('apiCall: failed to get JWT', e);
                 token = null;
             }
             
-            const response = await fetch(`/api/${endpoint}`, {
+            const url = `/api/${endpoint}`;
+            const method = options.method || 'GET';
+            console.log('apiCall:', { endpoint, method, hasToken: !!token });
+            
+            const response = await fetch(url, {
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
@@ -925,7 +957,9 @@
                 },
             });
 
-            return response.json();
+            const data = await response.json();
+            console.log('apiCall response:', { endpoint, status: response.status, success: data.success, error: data.error });
+            return data;
         }
 
         // Load all data
@@ -971,25 +1005,33 @@
             }
 
             container.innerHTML = allGigs.map(gig => {
-                // Check if user has a booking for this gig
-                const myBooking = [...myGigs.approved, ...myGigs.pending].find(
-                    g => g.gig?.id === gig.id
-                );
+                // Check if user has a booking for this gig (approved, pending, or rejected)
+                const approvedBooking = myGigs.approved.find(g => g.gig?.id === gig.id);
+                const pendingBooking = myGigs.pending.find(g => g.gig?.id === gig.id);
+                const rejectedBooking = myGigs.rejected.find(g => g.gig?.id === gig.id);
                 
                 let buttonText = 'Request Spot';
                 let buttonClass = '';
                 let disabled = false;
+                let statusMessage = '';
 
-                if (myBooking) {
-                    if (myBooking.booking.status === 'approved') {
-                        buttonText = '✅ Booked';
-                        buttonClass = 'booked';
-                        disabled = true;
-                    } else {
-                        buttonText = '⏳ Pending';
-                        buttonClass = 'pending';
-                        disabled = true;
-                    }
+                if (approvedBooking) {
+                    buttonText = '✅ Booked';
+                    buttonClass = 'booked';
+                    disabled = true;
+                    statusMessage = '<div class="gig-status approved">You are booked for this gig!</div>';
+                } else if (pendingBooking) {
+                    buttonText = '⏳ Request Pending';
+                    buttonClass = 'pending';
+                    disabled = true;
+                    statusMessage = '<div class="gig-status pending">Your request is being reviewed</div>';
+                } else if (rejectedBooking) {
+                    // Allow re-requesting after rejection
+                    buttonText = '🔄 Request Again';
+                    buttonClass = '';
+                    disabled = false;
+                    const reason = rejectedBooking.booking.rejectionReason;
+                    statusMessage = `<div class="gig-status rejected">Previous request was declined${reason ? ': ' + escapeHtml(reason) : ''}</div>`;
                 } else if (gig.slotsAvailable <= 0) {
                     buttonText = 'Full';
                     disabled = true;
@@ -997,6 +1039,7 @@
 
                 return `
                     <div class="gig-card">
+                        ${statusMessage}
                         <div class="gig-date">${formatDate(gig.date)}</div>
                         <div class="gig-venue">${escapeHtml(gig.venue)}</div>
                         <div class="gig-time">🕐 ${escapeHtml(gig.time)}</div>
@@ -1016,8 +1059,14 @@
 
         // Load my gigs
         async function loadMyGigs() {
+            const container = document.getElementById('my-gigs-container');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading your gigs...</div>';
+            
             try {
+                console.log('loadMyGigs: fetching...');
                 const data = await apiCall('getMyGigs');
+                console.log('loadMyGigs: response', { success: data.success, approved: data.approved?.length, pending: data.pending?.length, rejected: data.rejected?.length, error: data.error });
+                
                 if (data.success) {
                     myGigs = {
                         approved: data.approved || [],
@@ -1025,9 +1074,12 @@
                         rejected: data.rejected || [],
                     };
                     renderMyGigs();
+                } else {
+                    container.innerHTML = `<div class="message error">${data.error || 'Failed to load your gigs'}</div>`;
                 }
             } catch (error) {
                 console.error('Failed to load my gigs:', error);
+                container.innerHTML = '<div class="message error">Failed to load your gigs. Please try again.</div>';
             }
         }
 

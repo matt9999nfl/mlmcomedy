@@ -15,6 +15,7 @@ exports.handler = async (event, context) => {
 
     try {
         const { user } = context.clientContext || {};
+        console.log('getMyGigs: user context', { hasUser: !!user, sub: user?.sub, email: user?.email });
 
         if (!user) {
             return {
@@ -25,12 +26,13 @@ exports.handler = async (event, context) => {
         }
 
         const db = initializeFirebase();
+        console.log('getMyGigs: Firebase initialized, querying bookings for', user.sub);
 
-        // Get all bookings for this comedian
+        // Get all bookings for this comedian (removed orderBy to avoid index requirement)
         const bookingsSnapshot = await db.collection('bookings')
             .where('comedianId', '==', user.sub)
-            .orderBy('createdAt', 'desc')
             .get();
+        console.log('getMyGigs: found bookings', { count: bookingsSnapshot.size });
 
         const bookings = [];
         const gigIds = new Set();
