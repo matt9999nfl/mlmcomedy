@@ -20,16 +20,36 @@ function initializeFirebase() {
         throw new Error(`Firebase credentials missing: ${missing}. Configure environment variables in Netlify.`);
     }
 
-    const privateKey = privateKeyRaw.replace(/\n/g, '\n');
+    function normalizePrivateKey(raw) {
+        let key = (raw || '').trim();
+        // Strip surrounding quotes if present
+        if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith('\'') && key.endsWith('\''))) {
+            key = key.slice(1, -1);
+        }
+        // Convert escaped newlines/carriage returns to real ones
+        key = key.replace(/\\n/g, '\n').replace(/\\r/g, '\r');
+        return key;
+    }
+
+    const privateKey = normalizePrivateKey(privateKeyRaw);
 
     if (!admin.apps.length) {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId,
-                clientEmail,
-                privateKey,
-            }),
-        });
+        try {
+            admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId,
+                    clientEmail,
+                    privateKey,
+                }),
+            });
+        } catch (e) {
+            console.error('Firebase initializeApp error', { message: e?.message });
+            // Add a hint if key likely has bad formatting
+            const hasHeader = privateKey.includes('BEGIN PRIVATE KEY');
+            const hasNewlines = privateKey.includes('\n');
+            const hint = !hasHeader ? 'Missing key header/footer.' : (!hasNewlines ? 'No newlines found; ensure \\n are present.' : '');
+            throw new Error(`Failed to initialize Firebase Admin: ${e?.message}. ${hint}`.trim());
+        }
     }
 
     db = admin.firestore();
