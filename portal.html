@@ -844,13 +844,18 @@
         netlifyIdentity.on('init', user => {
             currentUser = user;
             updateUI();
+            // If a logged-in user is actually an admin, redirect them to the admin dashboard
+            if (currentUser) {
+                checkAdminAndRedirect(true);
+            }
         });
 
         netlifyIdentity.on('login', user => {
             currentUser = user;
             updateUI();
             netlifyIdentity.close();
-            loadAllData();
+            // Check if the logged-in user has admin access; if so, send them to admin dashboard
+            checkAdminAndRedirect();
         });
 
         netlifyIdentity.on('logout', () => {
@@ -860,6 +865,24 @@
 
         // Initialize
         netlifyIdentity.init();
+
+        // Determine if user is an admin via server-side validation and redirect if true
+        async function checkAdminAndRedirect(isInit = false) {
+            try {
+                const response = await apiCall('getBookings?status=pending');
+                if (response && response.success) {
+                    // Server validated admin access — redirect to admin dashboard
+                    window.location.href = 'admin.html';
+                    return;
+                }
+            } catch (err) {
+                // If 403 or any failure, user is not admin; continue portal flow
+            }
+            // Only load data here if this was a login (or init with logged-in non-admin)
+            if (!isInit || (isInit && currentUser)) {
+                loadAllData();
+            }
+        }
 
         function updateUI() {
             const authSection = document.getElementById('auth-section');
