@@ -44,7 +44,7 @@
             opacity: 0.3;
             background-image: 
                 linear-gradient(60deg, transparent 40%, rgba(139, 69, 139, 0.1) 40%, rgba(139, 69, 139, 0.1) 60%, transparent 60%),
-                linear-gradient(-60deg, transparent 40%, rgba(0, 255, 255, 0.1) 40%, rgba(0, 255, 255, 0.1) 60%, transparent 60%);
+                linear-gradient(-60deg, transparent 40%, rgba(110, 184, 212, 0.1) 40%, rgba(110, 184, 212, 0.1) 60%, transparent 60%);
             background-size: 200% 200%;
             animation: triangleMove 20s ease-in-out infinite;
         }
@@ -63,7 +63,7 @@
             height: 100vh;
             background: rgba(10, 10, 10, 0.95);
             border-right: 2px solid;
-            border-image: linear-gradient(180deg, #00ffff, #ff00ff, #00ffff) 1;
+            border-image: linear-gradient(180deg, #6eb8d4, #b88ece, #6eb8d4) 1;
             padding: 30px 20px;
             z-index: 100;
             overflow-y: auto;
@@ -79,8 +79,8 @@
             font-weight: bold;
             color: #fff;
             text-shadow: 
-                0 0 10px rgba(0, 255, 255, 0.8),
-                0 0 20px rgba(255, 0, 255, 0.8);
+                0 0 10px rgba(110, 184, 212, 0.8),
+                0 0 20px rgba(184, 142, 206, 0.8);
             letter-spacing: 3px;
         }
 
@@ -90,7 +90,7 @@
         }
 
         .portal-title {
-            color: #00ffff;
+            color: #6eb8d4;
             font-size: 14px;
             letter-spacing: 2px;
             margin-top: 10px;
@@ -98,16 +98,16 @@
         }
 
         .user-info {
-            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            background: linear-gradient(90deg, rgba(110, 184, 212, 0.1), rgba(184, 142, 206, 0.1));
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
         }
 
         .user-name {
             font-weight: bold;
-            color: #00ffff;
+            color: #6eb8d4;
             margin-bottom: 5px;
         }
 
@@ -127,7 +127,7 @@
             color: #fff;
             text-decoration: none;
             border: 1px solid transparent;
-            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            background: linear-gradient(90deg, rgba(110, 184, 212, 0.1), rgba(184, 142, 206, 0.1));
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -136,13 +136,13 @@
         }
 
         .nav-item:hover, .nav-item.active {
-            border: 1px solid #00ffff;
+            border: 1px solid #6eb8d4;
             transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(110, 184, 212, 0.5);
         }
 
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+            background: linear-gradient(90deg, rgba(110, 184, 212, 0.3), rgba(184, 142, 206, 0.3));
         }
 
         .logout-btn {
@@ -178,7 +178,7 @@
 
         .page-title {
             font-size: 32px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            background: linear-gradient(45deg, #6eb8d4, #b88ece);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -201,7 +201,7 @@
         .auth-box {
             background: rgba(20, 20, 20, 0.9);
             border: 2px solid;
-            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            border-image: linear-gradient(45deg, #6eb8d4, #b88ece) 1;
             padding: 40px;
             border-radius: 10px;
             text-align: center;
@@ -209,7 +209,7 @@
         }
 
         .auth-box h2 {
-            color: #00ffff;
+            color: #6eb8d4;
             margin-bottom: 20px;
         }
 
@@ -221,7 +221,7 @@
         .auth-btn {
             display: inline-block;
             padding: 15px 40px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            background: linear-gradient(45deg, #6eb8d4, #b88ece);
             color: #000;
             font-weight: bold;
             border: none;
@@ -233,7 +233,7 @@
 
         .auth-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 5px 20px rgba(110, 184, 212, 0.5);
         }
 
         /* Portal Content (shown when logged in) */
@@ -263,26 +263,26 @@
 
         .gig-card {
             background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
             border-radius: 10px;
             padding: 25px;
             transition: all 0.3s ease;
         }
 
         .gig-card:hover {
-            border-color: #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            border-color: #6eb8d4;
+            box-shadow: 0 0 20px rgba(110, 184, 212, 0.3);
         }
 
         .gig-date {
             font-size: 14px;
-            color: #ff00ff;
+            color: #b88ece;
             margin-bottom: 10px;
         }
 
         .gig-venue {
             font-size: 22px;
-            color: #00ffff;
+            color: #6eb8d4;
             margin-bottom: 10px;
         }
 
@@ -295,17 +295,17 @@
             display: inline-block;
             padding: 5px 15px;
             background: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
+            border: 1px solid #7eb87e;
             border-radius: 20px;
             font-size: 12px;
-            color: #00ff00;
+            color: #7eb87e;
             margin-bottom: 15px;
         }
 
         .gig-slots.full {
             background: rgba(255, 0, 0, 0.2);
-            border-color: #ff0000;
-            color: #ff0000;
+            border-color: #d47e7e;
+            color: #d47e7e;
         }
 
         .gig-description {
@@ -318,7 +318,7 @@
         .gig-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            background: linear-gradient(45deg, #6eb8d4, #b88ece);
             color: #000;
             border: none;
             cursor: pointer;
@@ -329,7 +329,7 @@
 
         .gig-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(110, 184, 212, 0.5);
         }
 
         .gig-btn:disabled {
@@ -345,7 +345,7 @@
         }
 
         .gig-btn.booked {
-            background: linear-gradient(45deg, #00ff00, #00aa00);
+            background: linear-gradient(45deg, #7eb87e, #6a9a6a);
         }
 
         /* Gig Status Messages */
@@ -360,7 +360,7 @@
         .gig-status.approved {
             background: rgba(0, 255, 0, 0.2);
             border: 1px solid rgba(0, 255, 0, 0.5);
-            color: #00ff00;
+            color: #7eb87e;
         }
 
         .gig-status.pending {
@@ -378,7 +378,7 @@
         /* Calendar View */
         .calendar-container {
             background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
             border-radius: 10px;
             padding: 20px;
         }
@@ -397,21 +397,21 @@
 
         .calendar-nav button {
             padding: 10px 20px;
-            background: rgba(0, 255, 255, 0.2);
-            border: 1px solid #00ffff;
-            color: #00ffff;
+            background: rgba(110, 184, 212, 0.2);
+            border: 1px solid #6eb8d4;
+            color: #6eb8d4;
             cursor: pointer;
             border-radius: 5px;
             transition: all 0.3s ease;
         }
 
         .calendar-nav button:hover {
-            background: rgba(0, 255, 255, 0.4);
+            background: rgba(110, 184, 212, 0.4);
         }
 
         .calendar-month {
             font-size: 24px;
-            color: #00ffff;
+            color: #6eb8d4;
         }
 
         .calendar-grid {
@@ -423,7 +423,7 @@
         .calendar-day-header {
             text-align: center;
             padding: 10px;
-            color: #ff00ff;
+            color: #b88ece;
             font-weight: bold;
         }
 
@@ -444,11 +444,11 @@
         }
 
         .calendar-day.today {
-            border: 2px solid #00ffff;
+            border: 2px solid #6eb8d4;
         }
 
         .calendar-day.has-gig {
-            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            background: linear-gradient(135deg, rgba(110, 184, 212, 0.2), rgba(184, 142, 206, 0.2));
         }
 
         .calendar-day-number {
@@ -459,7 +459,7 @@
         .calendar-gig-dot {
             width: 8px;
             height: 8px;
-            background: #00ff00;
+            background: #7eb87e;
             border-radius: 50%;
             margin-top: 5px;
         }
@@ -472,7 +472,7 @@
         .profile-form {
             max-width: 600px;
             background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
             border-radius: 10px;
             padding: 30px;
         }
@@ -483,7 +483,7 @@
 
         .form-group label {
             display: block;
-            color: #00ffff;
+            color: #6eb8d4;
             margin-bottom: 8px;
             font-size: 14px;
         }
@@ -493,7 +493,7 @@
             width: 100%;
             padding: 12px;
             background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
             border-radius: 5px;
             color: #fff;
             font-size: 14px;
@@ -503,7 +503,7 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #00ffff;
+            border-color: #6eb8d4;
         }
 
         .form-group textarea {
@@ -513,7 +513,7 @@
 
         .save-btn {
             padding: 15px 40px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            background: linear-gradient(45deg, #6eb8d4, #b88ece);
             color: #000;
             border: none;
             cursor: pointer;
@@ -525,7 +525,7 @@
 
         .save-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(110, 184, 212, 0.5);
         }
 
         /* My Gigs Section */
@@ -538,7 +538,7 @@
         .my-gigs-tab {
             padding: 10px 25px;
             background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(110, 184, 212, 0.3);
             color: #fff;
             cursor: pointer;
             border-radius: 5px;
@@ -546,12 +546,12 @@
         }
 
         .my-gigs-tab.active {
-            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
-            border-color: #00ffff;
+            background: linear-gradient(45deg, rgba(110, 184, 212, 0.3), rgba(184, 142, 206, 0.3));
+            border-color: #6eb8d4;
         }
 
         .my-gigs-tab:hover {
-            border-color: #00ffff;
+            border-color: #6eb8d4;
         }
 
         .status-badge {
@@ -564,8 +564,8 @@
 
         .status-badge.approved {
             background: rgba(0, 255, 0, 0.2);
-            color: #00ff00;
-            border: 1px solid #00ff00;
+            color: #7eb87e;
+            border: 1px solid #7eb87e;
         }
 
         .status-badge.pending {
@@ -576,18 +576,18 @@
 
         .status-badge.rejected {
             background: rgba(255, 0, 0, 0.2);
-            color: #ff0000;
-            border: 1px solid #ff0000;
+            color: #d47e7e;
+            border: 1px solid #d47e7e;
         }
 
         .lineup-position {
             display: inline-block;
             padding: 5px 10px;
-            background: rgba(255, 0, 255, 0.2);
-            border: 1px solid #ff00ff;
+            background: rgba(184, 142, 206, 0.2);
+            border: 1px solid #b88ece;
             border-radius: 5px;
             font-size: 12px;
-            color: #ff00ff;
+            color: #b88ece;
             margin-top: 10px;
         }
 
@@ -601,8 +601,8 @@
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(0, 255, 255, 0.3);
-            border-top-color: #00ffff;
+            border: 3px solid rgba(110, 184, 212, 0.3);
+            border-top-color: #6eb8d4;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -620,14 +620,14 @@
 
         .message.success {
             background: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            border: 1px solid #7eb87e;
+            color: #7eb87e;
         }
 
         .message.error {
             background: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff0000;
-            color: #ff0000;
+            border: 1px solid #d47e7e;
+            color: #d47e7e;
         }
 
         .empty-state {
@@ -637,7 +637,7 @@
         }
 
         .empty-state h3 {
-            color: #00ffff;
+            color: #6eb8d4;
             margin-bottom: 10px;
         }
 
@@ -662,7 +662,7 @@
         .modal-content {
             background: rgba(20, 20, 20, 0.95);
             border: 2px solid;
-            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
+            border-image: linear-gradient(45deg, #6eb8d4, #b88ece) 1;
             padding: 30px;
             border-radius: 10px;
             max-width: 500px;
@@ -677,7 +677,7 @@
         }
 
         .modal-title {
-            color: #00ffff;
+            color: #6eb8d4;
             font-size: 20px;
         }
 
