@@ -83,7 +83,9 @@ exports.handler = async (event, context) => {
         if (action === 'approve') {
             // Check if there's still room
             const currentLineup = gig.lineup || [];
-            if (currentLineup.length >= gig.slotsTotal) {
+            const totalSpots = gig.spots ? gig.spots.length : (gig.slotsTotal || 0);
+            
+            if (currentLineup.length >= totalSpots) {
                 return {
                     statusCode: 400,
                     headers,
@@ -91,15 +93,52 @@ exports.handler = async (event, context) => {
                 };
             }
 
+            // Find a matching available spot based on comedian's requested spot type
+            let assignedSpotIndex = null;
+            
+            if (gig.spots && Array.isArray(gig.spots)) {
+                const filledSpotIndices = new Set(currentLineup.map(l => l.spotIndex).filter(i => i !== undefined));
+                const requestedSpotType = booking.requestedSpotType || '';
+                
+                // Try to find exact match first
+                for (let i = 0; i < gig.spots.length; i++) {
+                    if (!filledSpotIndices.has(i)) {
+                        const spot = gig.spots[i];
+                        const spotLabel = spot.type === 'host' ? 'Host' : `${spot.length}min`;
+                        
+                        if (spotLabel === requestedSpotType) {
+                            assignedSpotIndex = i;
+                            break;
+                        }
+                    }
+                }
+                
+                // If no exact match, assign first available spot
+                if (assignedSpotIndex === null) {
+                    for (let i = 0; i < gig.spots.length; i++) {
+                        if (!filledSpotIndices.has(i)) {
+                            assignedSpotIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
             // Add comedian to lineup
+            const lineupEntry = {
+                comedianId: booking.comedianId,
+                comedianName: booking.comedianName,
+                comedianEmail: booking.comedianEmail,
+                order: currentLineup.length + 1,
+                addedAt: new Date().toISOString(),
+            };
+            
+            if (assignedSpotIndex !== null) {
+                lineupEntry.spotIndex = assignedSpotIndex;
+            }
+
             await gigRef.update({
-                lineup: admin.firestore.FieldValue.arrayUnion({
-                    comedianId: booking.comedianId,
-                    comedianName: booking.comedianName,
-                    comedianEmail: booking.comedianEmail,
-                    order: currentLineup.length + 1,
-                    addedAt: new Date().toISOString(),
-                }),
+                lineup: admin.firestore.FieldValue.arrayUnion(lineupEntry),
             });
 
             // Update booking status
@@ -107,6 +146,7 @@ exports.handler = async (event, context) => {
                 status: 'approved',
                 approvedAt: admin.firestore.FieldValue.serverTimestamp(),
                 approvedBy: user.email,
+                assignedSpotIndex: assignedSpotIndex,
             });
 
             return {

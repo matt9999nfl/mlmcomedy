@@ -33,7 +33,7 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const { gigId, message } = JSON.parse(event.body);
+        const { gigId, message, requestedSpotType } = JSON.parse(event.body);
 
         if (!gigId) {
             return {
@@ -57,7 +57,8 @@ exports.handler = async (event, context) => {
         }
 
         const gigData = gigDoc.data();
-        const slotsAvailable = gigData.slotsTotal - (gigData.lineup?.length || 0);
+        const totalSpots = gigData.spots ? gigData.spots.length : (gigData.slotsTotal || 0);
+        const slotsAvailable = totalSpots - (gigData.lineup?.length || 0);
 
         if (slotsAvailable <= 0) {
             return {
@@ -90,6 +91,7 @@ exports.handler = async (event, context) => {
             comedianName: user.user_metadata?.full_name || user.email,
             status: 'pending',
             message: message || '',
+            requestedSpotType: requestedSpotType || '',
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             createdAt: new Date().toISOString(),
         });

@@ -954,8 +954,19 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="gig-slots">Total Slots *</label>
-                    <input type="number" id="gig-slots" required min="1" max="50" placeholder="e.g., 8">
+                    <label>Lineup Spots *</label>
+                    <div id="spots-builder" style="background: rgba(30,30,30,0.5); padding: 15px; border-radius: 5px; margin-bottom: 10px;">
+                        <div id="spots-list"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-secondary" onclick="addSpot(6)" style="font-size: 12px; padding: 5px 10px;">+ 6 min</button>
+                            <button type="button" class="btn btn-secondary" onclick="addSpot(10)" style="font-size: 12px; padding: 5px 10px;">+ 10 min</button>
+                            <button type="button" class="btn btn-secondary" onclick="addSpot(15)" style="font-size: 12px; padding: 5px 10px;">+ 15 min</button>
+                            <button type="button" class="btn btn-secondary" onclick="addSpot(20)" style="font-size: 12px; padding: 5px 10px;">+ 20 min</button>
+                            <button type="button" class="btn btn-secondary" onclick="addSpot(30)" style="font-size: 12px; padding: 5px 10px;">+ 30 min</button>
+                            <button type="button" class="btn btn-secondary" onclick="addSpot('host')" style="font-size: 12px; padding: 5px 10px;">+ Host</button>
+                        </div>
+                    </div>
+                    <small style="color: #888;">Add spots to build your lineup. Typical: 5x 6min, 1x 10min, 1x 15min, 1x Host</small>
                 </div>
                 <div class="form-group">
                     <label for="gig-description">Description</label>
@@ -1208,13 +1219,31 @@
                     <tbody>
                         ${gigs.map(gig => {
                             const filled = gig.lineup?.length || 0;
-                            const status = filled >= gig.slotsTotal ? 'full' : 'open';
+                            const totalSpots = gig.spots ? gig.spots.length : (gig.slotsTotal || 0);
+                            const status = filled >= totalSpots ? 'full' : 'open';
+                            
+                            // Generate spot summary
+                            let spotSummary = '';
+                            if (gig.spots && Array.isArray(gig.spots)) {
+                                const spotCounts = {};
+                                gig.spots.forEach(spot => {
+                                    const label = spot.type === 'host' ? 'Host' : `${spot.length}min`;
+                                    spotCounts[label] = (spotCounts[label] || 0) + 1;
+                                });
+                                spotSummary = Object.entries(spotCounts)
+                                    .map(([label, count]) => `${count}x${label}`)
+                                    .join(', ');
+                            }
+                            
                             return `
                                 <tr>
                                     <td>${formatDate(gig.date)}</td>
                                     <td>${escapeHtml(gig.venue)}</td>
                                     <td>${escapeHtml(gig.time)}</td>
-                                    <td>${filled} / ${gig.slotsTotal}</td>
+                                    <td>
+                                        ${filled} / ${totalSpots}
+                                        ${spotSummary ? `<br><small style="color: #888;">${spotSummary}</small>` : ''}
+                                    </td>
                                     <td><span class="status-badge ${status}">${status.toUpperCase()}</span></td>
                                     <td>
                                         <div class="action-buttons">
@@ -1403,6 +1432,7 @@
                         <tr>
                             <th>Comedian</th>
                             <th>Gig</th>
+                            <th>Requested Spot</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1411,6 +1441,7 @@
                             <tr>
                                 <td>${escapeHtml(booking.comedianName)}</td>
                                 <td>${booking.gig ? escapeHtml(booking.gig.venue) + ' - ' + formatDate(booking.gig.date) : 'Unknown'}</td>
+                                <td>${booking.requestedSpotType ? `<span style="color: #b88ece;">${escapeHtml(booking.requestedSpotType)}</span>` : 'Any'}</td>
                                 <td>
                                     <button class="btn btn-success btn-sm" onclick="approveBooking('${booking.id}')">✅</button>
                                     <button class="btn btn-danger btn-sm" onclick="openRejectModal('${booking.id}')">❌</button>
@@ -1423,10 +1454,14 @@
         }
 
         // Gig Modal
+        let gigSpots = [];
+
         function openCreateGigModal() {
             document.getElementById('gig-modal-title').textContent = 'Create New Gig';
             document.getElementById('gig-id').value = '';
             document.getElementById('gig-form').reset();
+            gigSpots = [];
+            renderSpots();
             document.getElementById('gig-modal').classList.add('active');
         }
 
@@ -1439,26 +1474,79 @@
             document.getElementById('gig-venue').value = gig.venue;
             document.getElementById('gig-date').value = gig.date;
             document.getElementById('gig-time').value = gig.time;
-            document.getElementById('gig-slots').value = gig.slotsTotal;
             document.getElementById('gig-description').value = gig.description || '';
             document.getElementById('gig-notify').checked = false;
+
+            // Load spots from gig data
+            if (gig.spots && Array.isArray(gig.spots)) {
+                gigSpots = gig.spots.map(s => ({ ...s }));
+            } else {
+                // Fallback for old gigs with slotsTotal
+                gigSpots = [];
+                const totalSlots = gig.slotsTotal || 0;
+                for (let i = 0; i < totalSlots; i++) {
+                    gigSpots.push({ length: 6, type: 'performer', filled: false });
+                }
+            }
+            renderSpots();
 
             document.getElementById('gig-modal').classList.add('active');
         }
 
+        function addSpot(length) {
+            const spotType = length === 'host' ? 'host' : 'performer';
+            const spotLength = length === 'host' ? 0 : parseInt(length);
+            gigSpots.push({
+                length: spotLength,
+                type: spotType,
+                filled: false,
+            });
+            renderSpots();
+        }
+
+        function removeSpot(index) {
+            gigSpots.splice(index, 1);
+            renderSpots();
+        }
+
+        function renderSpots() {
+            const container = document.getElementById('spots-list');
+            if (gigSpots.length === 0) {
+                container.innerHTML = '<p style="color: #888; margin: 0;">No spots added yet. Click buttons below to add spots.</p>';
+                return;
+            }
+
+            container.innerHTML = gigSpots.map((spot, index) => {
+                const label = spot.type === 'host' ? 'Host' : `${spot.length} min`;
+                return `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px; margin-bottom: 5px;">
+                        <span style="flex: 1; color: #b88ece;">${index + 1}. ${label}</span>
+                        <button type="button" class="btn btn-danger" onclick="removeSpot(${index})" style="font-size: 12px; padding: 3px 8px;">✕</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function closeGigModal() {
             document.getElementById('gig-modal').classList.remove('active');
+            gigSpots = [];
         }
 
         async function saveGig(e) {
             e.preventDefault();
+
+            if (gigSpots.length === 0) {
+                showMessage('error', 'Please add at least one spot to the lineup');
+                return;
+            }
 
             const gigId = document.getElementById('gig-id').value;
             const gigData = {
                 venue: document.getElementById('gig-venue').value,
                 date: document.getElementById('gig-date').value,
                 time: document.getElementById('gig-time').value,
-                slotsTotal: parseInt(document.getElementById('gig-slots').value),
+                spots: gigSpots,
+                slotsTotal: gigSpots.length, // Keep for backward compatibility
                 description: document.getElementById('gig-description').value,
                 notifyComedians: document.getElementById('gig-notify').checked,
             };
@@ -1559,6 +1647,7 @@
         function renderLineup() {
             const container = document.getElementById('lineup-list');
             const lineup = currentLineupGig?.lineup || [];
+            const spots = currentLineupGig?.spots || [];
 
             if (lineup.length === 0) {
                 container.innerHTML = `
@@ -1569,14 +1658,24 @@
                 return;
             }
 
-            container.innerHTML = lineup.map((comedian, index) => `
-                <div class="lineup-item" data-comedian-id="${comedian.comedianId}">
-                    <span class="lineup-order">${index + 1}</span>
-                    <span class="lineup-name">${escapeHtml(comedian.comedianName)}</span>
-                    <span class="lineup-email">${escapeHtml(comedian.comedianEmail)}</span>
-                    <button class="lineup-remove" onclick="removeFromLineup('${comedian.comedianId}')">Remove</button>
-                </div>
-            `).join('');
+            container.innerHTML = lineup.map((comedian, index) => {
+                // Get spot info
+                let spotLabel = '';
+                if (comedian.spotIndex !== undefined && spots[comedian.spotIndex]) {
+                    const spot = spots[comedian.spotIndex];
+                    spotLabel = spot.type === 'host' ? 'Host' : `${spot.length}min`;
+                }
+                
+                return `
+                    <div class="lineup-item" data-comedian-id="${comedian.comedianId}">
+                        <span class="lineup-order">${index + 1}</span>
+                        <span class="lineup-name">${escapeHtml(comedian.comedianName)}</span>
+                        ${spotLabel ? `<span class="lineup-spot" style="color: #b88ece; font-size: 12px;">${spotLabel}</span>` : ''}
+                        <span class="lineup-email">${escapeHtml(comedian.comedianEmail)}</span>
+                        <button class="lineup-remove" onclick="removeFromLineup('${comedian.comedianId}')">Remove</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         function closeLineupModal() {

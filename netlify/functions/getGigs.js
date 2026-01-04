@@ -39,10 +39,29 @@ exports.handler = async (event, context) => {
             // Filter by status if specified
             if (status && data.status !== status) return;
             
+            // Calculate available spots
+            const totalSpots = data.spots ? data.spots.length : (data.slotsTotal || 0);
+            const filledSpots = data.lineup?.length || 0;
+            
+            // Get list of available spot types
+            const availableSpotTypes = [];
+            if (data.spots && Array.isArray(data.spots)) {
+                const filledSpotIndices = new Set(data.lineup?.map(l => l.spotIndex) || []);
+                data.spots.forEach((spot, index) => {
+                    if (!filledSpotIndices.has(index)) {
+                        const label = spot.type === 'host' ? 'Host' : `${spot.length}min`;
+                        if (!availableSpotTypes.includes(label)) {
+                            availableSpotTypes.push(label);
+                        }
+                    }
+                });
+            }
+            
             gigs.push({
                 id: doc.id,
                 ...data,
-                slotsAvailable: data.slotsTotal - (data.lineup?.length || 0),
+                slotsAvailable: totalSpots - filledSpots,
+                availableSpotTypes,
             });
         });
 

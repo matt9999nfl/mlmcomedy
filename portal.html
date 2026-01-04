@@ -851,8 +851,14 @@
             </div>
             <div id="modal-gig-details"></div>
             <div class="form-group">
+                <label for="request-spot-type">Preferred Spot Length *</label>
+                <select id="request-spot-type" required>
+                    <option value="">Select a spot length...</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="request-message">Message to Admin (optional)</label>
-                <textarea id="request-message" placeholder="Any notes about your availability or set length..."></textarea>
+                <textarea id="request-message" placeholder="Any notes about your availability or set preferences..."></textarea>
             </div>
             <button class="gig-btn" onclick="submitRequest()">📨 Submit Request</button>
         </div>
@@ -1103,11 +1109,20 @@
             container.innerHTML = gigs.map(({ booking, gig }) => {
                 if (!gig) return '';
 
-                // Find position in lineup
+                // Find position in lineup and spot info
                 let position = null;
+                let spotInfo = null;
                 if (booking.status === 'approved' && gig.lineup) {
                     const lineupEntry = gig.lineup.find(l => l.comedianId === currentUser?.id);
-                    if (lineupEntry) position = lineupEntry.order;
+                    if (lineupEntry) {
+                        position = lineupEntry.order;
+                        
+                        // Get spot details
+                        if (lineupEntry.spotIndex !== undefined && gig.spots && gig.spots[lineupEntry.spotIndex]) {
+                            const spot = gig.spots[lineupEntry.spotIndex];
+                            spotInfo = spot.type === 'host' ? 'Host' : `${spot.length} min`;
+                        }
+                    }
                 }
 
                 return `
@@ -1117,7 +1132,7 @@
                         <div class="gig-venue">${escapeHtml(gig.venue)}</div>
                         <div class="gig-time">🕐 ${escapeHtml(gig.time)}</div>
                         ${gig.description ? `<div class="gig-description">${escapeHtml(gig.description)}</div>` : ''}
-                        ${position ? `<div class="lineup-position">🎤 Position #${position} in lineup</div>` : ''}
+                        ${position ? `<div class="lineup-position">🎤 Position #${position} in lineup${spotInfo ? ` • ${spotInfo}` : ''}</div>` : ''}
                         ${booking.status === 'rejected' && booking.rejectionReason ? 
                             `<div class="gig-description" style="color: #ff6666;">Reason: ${escapeHtml(booking.rejectionReason)}</div>` : ''}
                     </div>
@@ -1181,24 +1196,49 @@
                 </div>
             `;
             
+            // Populate spot type options
+            const spotSelect = document.getElementById('request-spot-type');
+            spotSelect.innerHTML = '<option value="">Select a spot length...</option>';
+            
+            if (gig.availableSpotTypes && gig.availableSpotTypes.length > 0) {
+                gig.availableSpotTypes.forEach(spotType => {
+                    const option = document.createElement('option');
+                    option.value = spotType;
+                    option.textContent = spotType;
+                    spotSelect.appendChild(option);
+                });
+            } else {
+                // Fallback for old gigs without spot types
+                spotSelect.innerHTML += '<option value="Any">Any available spot</option>';
+            }
+            
             document.getElementById('request-modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('request-modal').classList.remove('active');
             selectedGigId = null;
+            document.getElementById('request-message').value = '';
+            document.getElementById('request-spot-type').value = '';
         }
 
         async function submitRequest() {
             if (!selectedGigId) return;
 
+            const spotType = document.getElementById('request-spot-type').value;
             const message = document.getElementById('request-message').value;
             const messageContainer = document.getElementById('message-container');
+
+            if (!spotType) {
+                messageContainer.innerHTML = '<div class="message error">Please select a preferred spot length</div>';
+                setTimeout(() => messageContainer.innerHTML = '', 3000);
+                return;
+            }
 
             try {
                 const data = await apiCall('requestGigSpot', {
                     method: 'POST',
-                    body: JSON.stringify({ gigId: selectedGigId, message }),
+                    body: JSON.stringify({ gigId: selectedGigId, message, requestedSpotType: spotType }),
                 });
 
                 closeModal();

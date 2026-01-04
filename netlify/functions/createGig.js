@@ -39,14 +39,13 @@ exports.handler = async (event, context) => {
         // Handle different HTTP methods
         if (event.httpMethod === 'POST') {
             // Create new gig
-            const { venue, date, time, slotsTotal, description, notifyComedians } = body;
+            const { venue, date, time, slotsTotal, spots, description, notifyComedians } = body;
 
-            if (!venue || !date || !time || !slotsTotal) {
+            if (!venue || !date || !time) {
                 const missing = [
                     !venue ? 'venue' : null,
                     !date ? 'date' : null,
                     !time ? 'time' : null,
-                    !slotsTotal ? 'slotsTotal' : null,
                 ].filter(Boolean);
                 console.warn('Create gig validation failed', { missing });
                 return {
@@ -54,7 +53,20 @@ exports.handler = async (event, context) => {
                     headers,
                     body: JSON.stringify({ 
                         success: false, 
-                        error: 'Venue, date, time, and total slots are required' 
+                        error: 'Venue, date, and time are required' 
+                    }),
+                };
+            }
+
+            // Validate spots array
+            const spotsArray = spots && Array.isArray(spots) ? spots : [];
+            if (spotsArray.length === 0) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({ 
+                        success: false, 
+                        error: 'At least one lineup spot is required' 
                     }),
                 };
             }
@@ -63,7 +75,8 @@ exports.handler = async (event, context) => {
                 venue,
                 date,
                 time,
-                slotsTotal: parseInt(slotsTotal, 10),
+                spots: spotsArray,
+                slotsTotal: spotsArray.length, // Keep for backward compatibility
                 description: description || '',
                 status: 'open',
                 lineup: [],
@@ -72,7 +85,7 @@ exports.handler = async (event, context) => {
             };
 
             const gigRef = await db.collection('gigs').add(gigData);
-            console.log('Gig created', { gigId: gigRef.id, venue, date, time });
+            console.log('Gig created', { gigId: gigRef.id, venue, date, time, totalSpots: spotsArray.length });
 
             return {
                 statusCode: 200,
@@ -111,13 +124,21 @@ exports.handler = async (event, context) => {
             }
 
             // Clean up updates object
-            const allowedFields = ['venue', 'date', 'time', 'slotsTotal', 'description', 'status'];
+            const allowedFields = ['venue', 'date', 'time', 'slotsTotal', 'spots', 'description', 'status'];
             const cleanUpdates = {};
             allowedFields.forEach(field => {
                 if (updates[field] !== undefined) {
-                    cleanUpdates[field] = field === 'slotsTotal' 
-                        ? parseInt(updates[field], 10) 
-                        : updates[field];
+                    if (field === 'slotsTotal') {
+                        cleanUpdates[field] = parseInt(updates[field], 10);
+                    } else if (field === 'spots') {
+                        // Validate spots array
+                        if (Array.isArray(updates[field]) && updates[field].length > 0) {
+                            cleanUpdates[field] = updates[field];
+                            cleanUpdates.slotsTotal = updates[field].length; // Keep in sync
+                        }
+                    } else {
+                        cleanUpdates[field] = updates[field];
+                    }
                 }
             });
             console.log('Gig update payload', { gigId, updateKeys: Object.keys(cleanUpdates) });
