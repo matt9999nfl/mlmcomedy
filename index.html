@@ -6,6 +6,18 @@
     <title>MLM Comedy - Matt Lilley Media | Christchurch Stand-up Comedy</title>
     <meta name="description" content="MLM Comedy - Christchurch's premier stand-up comedy production company. Catch the best comedy shows in New Zealand.">
     
+    <script>
+        // Forward Netlify Identity recovery/confirmation/invite tokens to the portal
+        (function() {
+            var hash = window.location.hash || '';
+            if (hash && (hash.indexOf('recovery_token=') !== -1 || hash.indexOf('confirmation_token=') !== -1 || hash.indexOf('invite_token=') !== -1)) {
+                var target = '/portal.html' + hash;
+                // Use replace to avoid leaving a useless entry in history
+                window.location.replace(target);
+            }
+        })();
+    </script>
+    
     <style>
         * {
             margin: 0;
