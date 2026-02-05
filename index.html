@@ -6,17 +6,9 @@
     <title>MLM Comedy - Matt Lilley Media | Christchurch Stand-up Comedy</title>
     <meta name="description" content="MLM Comedy - Christchurch's premier stand-up comedy production company. Catch the best comedy shows in New Zealand.">
     
-    <script>
-        // Forward Netlify Identity recovery/confirmation/invite tokens to the portal
-        (function() {
-            var hash = window.location.hash || '';
-            if (hash && (hash.indexOf('recovery_token=') !== -1 || hash.indexOf('confirmation_token=') !== -1 || hash.indexOf('invite_token=') !== -1)) {
-                var target = '/portal.html' + hash;
-                // Use replace to avoid leaving a useless entry in history
-                window.location.replace(target);
-            }
-        })();
-    </script>
+    <!-- Netlify Identity Widget — needed on the homepage so password-reset / confirmation
+         emails (which link to the site root) are handled by the widget automatically. -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     
     <style>
         * {
@@ -657,6 +649,20 @@
 
         // Load past shows when page loads
         document.addEventListener('DOMContentLoaded', loadPastShows);
+
+        // ── Netlify Identity: handle recovery / confirmation / invite tokens ──
+        // Recovery-email links point to the site root with a #recovery_token hash.
+        // The widget auto-detects the token and opens the "Set new password" dialog.
+        // After a successful login (password set), redirect to the comedian portal.
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on('init', function(user) {
+                if (!user) {
+                    window.netlifyIdentity.on('login', function() {
+                        window.location.href = '/portal.html';
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>
