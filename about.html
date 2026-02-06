@@ -255,6 +255,14 @@
             border-radius: 5px;
         }
 
+        /* Body scroll lock when mobile menu is open */
+        body.menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
         .mobile-nav {
             display: none;
             position: fixed;
@@ -267,6 +275,9 @@
             padding: 80px 20px 20px;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .mobile-nav.active {
@@ -419,15 +430,36 @@
     </main>
 
     <script>
+        let scrollPosition = 0;
+        
         function toggleMobileMenu() {
             const mobileNav = document.getElementById('mobileNav');
-            mobileNav.classList.toggle('active');
+            const isOpening = !mobileNav.classList.contains('active');
+            
+            if (isOpening) {
+                scrollPosition = window.pageYOffset;
+                document.body.style.top = `-${scrollPosition}px`;
+                mobileNav.classList.add('active');
+                document.body.classList.add('menu-open');
+            } else {
+                closeMobileMenu();
+            }
+        }
+        
+        function closeMobileMenu() {
+            const mobileNav = document.getElementById('mobileNav');
+            if (mobileNav.classList.contains('active')) {
+                mobileNav.classList.remove('active');
+                document.body.classList.remove('menu-open');
+                document.body.style.top = '';
+                window.scrollTo(0, scrollPosition);
+            }
         }
 
         // Close menu when clicking a link
         document.querySelectorAll('.mobile-nav-link').forEach(item => {
             item.addEventListener('click', () => {
-                document.getElementById('mobileNav').classList.remove('active');
+                closeMobileMenu();
             });
         });
     </script>
