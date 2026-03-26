@@ -7,7 +7,7 @@
     <meta name="description" content="Experience underground comedy at its finest. Bootleg Comedy brings raw, uncensored stand-up to Volstead Trading Co.">
     
     <!-- Humanitix Checkout Widget -->
-    <script src="https://events.humanitix.com/scripts/widgets/inline.js" type="module"></script>
+    <script src="https://events.humanitix.com/scripts/widgets/popup.js" type="module"></script>
     
     <style>
         * {
@@ -116,19 +116,19 @@
 
         /* Main Content */
         .main-content {
-            padding-top: 120px;
+            padding-top: 100px;
             min-height: 100vh;
         }
 
         .show-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 30px 20px;
         }
 
         .show-header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 20px;
         }
 
         .show-title {
@@ -167,7 +167,7 @@
         .show-banner {
             width: 100%;
             max-width: 800px;
-            margin: 30px auto;
+            margin: 20px auto;
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(100, 180, 200, 0.15);
             border: 1px solid rgba(100, 180, 200, 0.2);
@@ -186,9 +186,9 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(100, 180, 200, 0.2);
-            padding: 40px;
+            padding: 30px;
             border-radius: 16px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
@@ -202,11 +202,26 @@
         }
 
         /* Humanitix iframe styling */
-        iframe[data-checkout] {
-            width: 100%;
-            min-height: 600px;
+        .ticket-btn {
+            display: inline-block;
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #88c0d0, #b48ead);
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(100, 180, 200, 0.3);
+        }
+
+        .ticket-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(100, 180, 200, 0.5);
         }
 
         .description {
@@ -341,8 +356,9 @@
                 padding: 20px;
             }
 
-            iframe[data-checkout] {
-                min-height: 500px;
+            .ticket-btn {
+                padding: 15px 40px;
+                font-size: 18px;
             }
         }
     </style>
@@ -388,6 +404,11 @@
                 <p class="show-tagline">Underground comedy at its finest</p>
             </div>
 
+            <div class="checkout-section" style="text-align: center;">
+                <h2 class="checkout-title">Get Your Tickets</h2>
+                <a class="ticket-btn" href="https://events.humanitix.com/bootleg-comedy-volstead-trading-co-f5qsdjdn/tickets?widget=popup">🎟️ Buy Tickets</a>
+            </div>
+
             <div class="show-banner">
                 <img src="Bootleg Online FB.jpg" alt="Bootleg Comedy @ Volstead Trading Co Banner">
             </div>
@@ -398,12 +419,6 @@
                 <p>Bootleg Comedy brings you the best underground comedians performing in the unique atmosphere of Volstead Trading Co. No filters, no boundaries – just pure comedy gold.</p>
                 
                 <p>Join us for a night of laughter, drinks, and unforgettable performances. Limited seating available!</p>
-            </div>
-
-            <div class="checkout-section">
-                <h2 class="checkout-title">Get Your Tickets</h2>
-                <script src="https://events.humanitix.com/scripts/widgets/inline.js" type="module"></script>
-                <iframe data-checkout="bootleg-comedy-volstead-trading-co-nvjf2eaf"></iframe>
             </div>
         </div>
     </main>
