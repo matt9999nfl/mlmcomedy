@@ -7,7 +7,7 @@
     <meta name="description" content="Experience underground comedy at its finest. Bootleg Comedy brings raw, uncensored stand-up to Volstead Trading Co.">
     
     <!-- Humanitix Checkout Widget -->
-    <script src="https://events.humanitix.com/scripts/widgets/popup.js" type="module"></script>
+    <script src="https://events.humanitix.com/scripts/widgets/inline.js" type="module"></script>
     
     <style>
         * {
@@ -202,26 +202,11 @@
         }
 
         /* Humanitix iframe styling */
-        .ticket-btn {
-            display: inline-block;
-            padding: 18px 50px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-            background: linear-gradient(135deg, #88c0d0, #b48ead);
+        iframe[data-checkout] {
+            width: 100%;
+            min-height: 600px;
             border: none;
-            border-radius: 12px;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(100, 180, 200, 0.3);
-        }
-
-        .ticket-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(100, 180, 200, 0.5);
+            border-radius: 10px;
         }
 
         .description {
@@ -356,9 +341,8 @@
                 padding: 20px;
             }
 
-            .ticket-btn {
-                padding: 15px 40px;
-                font-size: 18px;
+            iframe[data-checkout] {
+                min-height: 500px;
             }
         }
     </style>
@@ -404,9 +388,9 @@
                 <p class="show-tagline">Underground comedy at its finest</p>
             </div>
 
-            <div class="checkout-section" style="text-align: center;">
+            <div class="checkout-section">
                 <h2 class="checkout-title">Get Your Tickets</h2>
-                <a class="ticket-btn" href="https://events.humanitix.com/bootleg-comedy-volstead-trading-co-f5qsdjdn/tickets?widget=popup">🎟️ Buy Tickets</a>
+                <iframe data-checkout="bootleg-comedy-volstead-trading-co-f5qsdjdn"></iframe>
             </div>
 
             <div class="show-banner">
