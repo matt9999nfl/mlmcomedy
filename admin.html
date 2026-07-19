@@ -6,10 +6,18 @@
     <title>Admin Dashboard - MLM Comedy</title>
     <meta name="description" content="MLM Comedy Admin Dashboard - Manage gigs, bookings, and comedians.">
     
+    <link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Sortable.js for drag-and-drop -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     
     <style>
+
+        h1, h2, h3, .page-title, .logo, .gig-venue, .calendar-month, .modal-title, .portal-title {
+            font-family: 'Archivo Black', 'Arial Black', Arial, sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -17,8 +25,8 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: #0a0a0a;
+            font-family: 'Inter', Arial, sans-serif;
+            background: #0D0D12;
             color: #fff;
             overflow-x: hidden;
             min-height: 100vh;
@@ -30,7 +38,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #0a0a0a, #1a0d1a, #0d1a1a);
+            background: linear-gradient(45deg, #0D0D12, #1a0d1a, #0d1a1a);
             z-index: -2;
         }
 
@@ -43,8 +51,8 @@
             z-index: -1;
             opacity: 0.3;
             background-image: 
-                linear-gradient(60deg, transparent 40%, rgba(139, 69, 139, 0.1) 40%, rgba(139, 69, 139, 0.1) 60%, transparent 60%),
-                linear-gradient(-60deg, transparent 40%, rgba(110, 184, 212, 0.1) 40%, rgba(110, 184, 212, 0.1) 60%, transparent 60%);
+                linear-gradient(60deg, transparent 40%, rgba(255, 46, 209, 0.08) 40%, rgba(255, 46, 209, 0.08) 60%, transparent 60%),
+                linear-gradient(-60deg, transparent 40%, rgba(0, 229, 255, 0.1) 40%, rgba(0, 229, 255, 0.1) 60%, transparent 60%);
             background-size: 200% 200%;
             animation: triangleMove 20s ease-in-out infinite;
         }
@@ -61,9 +69,9 @@
             top: 0;
             width: 280px;
             height: 100vh;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(13, 13, 18, 0.95);
             border-right: 2px solid;
-            border-image: linear-gradient(180deg, #b88ece, #6eb8d4, #b88ece) 1;
+            border-image: linear-gradient(180deg, #FF2ED1, #00E5FF, #FF2ED1) 1;
             padding: 30px 20px;
             z-index: 100;
             overflow-y: auto;
@@ -75,22 +83,12 @@
         }
 
         .logo {
-            font-size: 36px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 
-                0 0 10px rgba(184, 142, 206, 0.8),
-                0 0 20px rgba(110, 184, 212, 0.8);
-            letter-spacing: 3px;
-        }
-
-        .logo a {
-            color: inherit;
+            display: block;
             text-decoration: none;
         }
 
         .portal-title {
-            color: #b88ece;
+            color: #FF2ED1;
             font-size: 14px;
             letter-spacing: 2px;
             margin-top: 10px;
@@ -100,29 +98,29 @@
         .admin-badge {
             display: inline-block;
             padding: 3px 10px;
-            background: linear-gradient(45deg, #ff0066, #b88ece);
+            background: linear-gradient(45deg, #ff0066, #FF2ED1);
             border-radius: 20px;
             font-size: 10px;
             margin-top: 5px;
         }
 
         .user-info {
-            background: linear-gradient(90deg, rgba(184, 142, 206, 0.1), rgba(110, 184, 212, 0.1));
+            background: linear-gradient(90deg, rgba(255, 46, 209, 0.1), rgba(0, 229, 255, 0.1));
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            border: 1px solid rgba(255, 46, 209, 0.3);
         }
 
         .user-name {
             font-weight: bold;
-            color: #b88ece;
+            color: #FF2ED1;
             margin-bottom: 5px;
         }
 
         .user-email {
             font-size: 12px;
-            color: #888;
+            color: #8A93A8;
         }
 
         .nav-menu {
@@ -136,7 +134,7 @@
             color: #fff;
             text-decoration: none;
             border: 1px solid transparent;
-            background: linear-gradient(90deg, rgba(184, 142, 206, 0.1), rgba(110, 184, 212, 0.1));
+            background: linear-gradient(90deg, rgba(255, 46, 209, 0.1), rgba(0, 229, 255, 0.1));
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -145,13 +143,13 @@
         }
 
         .nav-item:hover, .nav-item.active {
-            border: 1px solid #b88ece;
+            border: 1px solid #FF2ED1;
             transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(184, 142, 206, 0.5);
+            box-shadow: 0 0 15px rgba(255, 46, 209, 0.5);
         }
 
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(184, 142, 206, 0.3), rgba(110, 184, 212, 0.3));
+            background: linear-gradient(90deg, rgba(255, 46, 209, 0.3), rgba(0, 229, 255, 0.3));
         }
 
         .nav-badge {
@@ -203,14 +201,14 @@
 
         .page-title {
             font-size: 32px;
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
+            background: linear-gradient(45deg, #FF2ED1, #00E5FF);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .page-subtitle {
-            color: #888;
+            color: #8A93A8;
         }
 
         .header-actions {
@@ -228,9 +226,9 @@
         }
 
         .auth-box {
-            background: rgba(20, 20, 20, 0.9);
+            background: rgba(21, 21, 29, 0.9);
             border: 2px solid;
-            border-image: linear-gradient(45deg, #b88ece, #6eb8d4) 1;
+            border-image: linear-gradient(45deg, #FF2ED1, #00E5FF) 1;
             padding: 40px;
             border-radius: 10px;
             text-align: center;
@@ -238,20 +236,20 @@
         }
 
         .auth-box h2 {
-            color: #b88ece;
+            color: #FF2ED1;
             margin-bottom: 20px;
         }
 
         .auth-box p {
-            color: #888;
+            color: #8A93A8;
             margin-bottom: 30px;
         }
 
         .auth-btn {
             display: inline-block;
             padding: 15px 40px;
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
-            color: #000;
+            background: linear-gradient(45deg, #FF2ED1, #00E5FF);
+            color: #0D0D12;
             font-weight: bold;
             border: none;
             cursor: pointer;
@@ -262,7 +260,7 @@
 
         .auth-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(184, 142, 206, 0.5);
+            box-shadow: 0 5px 20px rgba(255, 46, 209, 0.5);
         }
 
         .not-admin {
@@ -296,8 +294,8 @@
         }
 
         .stat-card {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            background: rgba(21, 21, 29, 0.9);
+            border: 1px solid rgba(255, 46, 209, 0.3);
             border-radius: 10px;
             padding: 25px;
             text-align: center;
@@ -305,21 +303,21 @@
         }
 
         .stat-card:hover {
-            border-color: #b88ece;
-            box-shadow: 0 0 20px rgba(184, 142, 206, 0.3);
+            border-color: #FF2ED1;
+            box-shadow: 0 0 20px rgba(255, 46, 209, 0.3);
         }
 
         .stat-value {
             font-size: 48px;
             font-weight: bold;
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
+            background: linear-gradient(45deg, #FF2ED1, #00E5FF);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .stat-label {
-            color: #888;
+            color: #8A93A8;
             margin-top: 10px;
             text-transform: uppercase;
             font-size: 12px;
@@ -329,8 +327,8 @@
         /* Tables */
         .data-table {
             width: 100%;
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            background: rgba(21, 21, 29, 0.9);
+            border: 1px solid rgba(255, 46, 209, 0.3);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -339,19 +337,19 @@
         .data-table td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid rgba(184, 142, 206, 0.1);
+            border-bottom: 1px solid rgba(255, 46, 209, 0.1);
         }
 
         .data-table th {
-            background: rgba(184, 142, 206, 0.1);
-            color: #b88ece;
+            background: rgba(255, 46, 209, 0.1);
+            color: #FF2ED1;
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 1px;
         }
 
         .data-table tr:hover {
-            background: rgba(184, 142, 206, 0.05);
+            background: rgba(255, 46, 209, 0.05);
         }
 
         /* Buttons */
@@ -367,18 +365,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
-            color: #000;
+            background: linear-gradient(45deg, #FF2ED1, #00E5FF);
+            color: #0D0D12;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(184, 142, 206, 0.5);
+            box-shadow: 0 5px 15px rgba(255, 46, 209, 0.5);
         }
 
         .btn-success {
             background: linear-gradient(45deg, #7eb87e, #6a9a6a);
-            color: #000;
+            color: #0D0D12;
         }
 
         .btn-danger {
@@ -388,7 +386,7 @@
 
         .btn-warning {
             background: linear-gradient(45deg, #ffaa00, #ff6600);
-            color: #000;
+            color: #0D0D12;
         }
 
         .btn-sm {
@@ -398,13 +396,13 @@
 
         .btn-icon {
             padding: 8px 12px;
-            background: rgba(184, 142, 206, 0.2);
-            border: 1px solid #b88ece;
-            color: #b88ece;
+            background: rgba(255, 46, 209, 0.2);
+            border: 1px solid #FF2ED1;
+            color: #FF2ED1;
         }
 
         .btn-icon:hover {
-            background: rgba(184, 142, 206, 0.4);
+            background: rgba(255, 46, 209, 0.4);
         }
 
         /* Status Badges */
@@ -435,15 +433,15 @@
         }
 
         .status-badge.open {
-            background: rgba(110, 184, 212, 0.2);
-            color: #6eb8d4;
-            border: 1px solid #6eb8d4;
+            background: rgba(0, 229, 255, 0.2);
+            color: #00E5FF;
+            border: 1px solid #00E5FF;
         }
 
         .status-badge.full {
-            background: rgba(184, 142, 206, 0.2);
-            color: #b88ece;
-            border: 1px solid #b88ece;
+            background: rgba(255, 46, 209, 0.2);
+            color: #FF2ED1;
+            border: 1px solid #FF2ED1;
         }
 
         /* Forms */
@@ -453,7 +451,7 @@
 
         .form-group label {
             display: block;
-            color: #b88ece;
+            color: #FF2ED1;
             margin-bottom: 8px;
             font-size: 14px;
         }
@@ -463,8 +461,8 @@
         .form-group select {
             width: 100%;
             padding: 12px;
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            background: rgba(27, 27, 38, 0.8);
+            border: 1px solid rgba(255, 46, 209, 0.3);
             border-radius: 5px;
             color: #fff;
             font-size: 14px;
@@ -475,7 +473,7 @@
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #b88ece;
+            border-color: #FF2ED1;
         }
 
         .form-group textarea {
@@ -502,8 +500,8 @@
 
         /* Lineup Manager */
         .lineup-container {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            background: rgba(21, 21, 29, 0.9);
+            border: 1px solid rgba(255, 46, 209, 0.3);
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
@@ -517,7 +515,7 @@
         }
 
         .lineup-title {
-            color: #b88ece;
+            color: #FF2ED1;
             font-size: 18px;
         }
 
@@ -529,8 +527,8 @@
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(110, 184, 212, 0.3);
+            background: rgba(27, 27, 38, 0.8);
+            border: 1px solid rgba(0, 229, 255, 0.3);
             border-radius: 5px;
             margin-bottom: 10px;
             cursor: grab;
@@ -542,20 +540,20 @@
         }
 
         .lineup-item:hover {
-            border-color: #6eb8d4;
-            box-shadow: 0 0 10px rgba(110, 184, 212, 0.3);
+            border-color: #00E5FF;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
         }
 
         .lineup-item.sortable-ghost {
             opacity: 0.5;
-            background: rgba(184, 142, 206, 0.2);
+            background: rgba(255, 46, 209, 0.2);
         }
 
         .lineup-order {
             width: 30px;
             height: 30px;
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
-            color: #000;
+            background: linear-gradient(45deg, #FF2ED1, #00E5FF);
+            color: #0D0D12;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -569,7 +567,7 @@
         }
 
         .lineup-email {
-            color: #888;
+            color: #8A93A8;
             font-size: 12px;
             margin-right: 15px;
         }
@@ -609,9 +607,9 @@
         }
 
         .modal-content {
-            background: rgba(20, 20, 20, 0.98);
+            background: rgba(21, 21, 29, 0.98);
             border: 2px solid;
-            border-image: linear-gradient(45deg, #b88ece, #6eb8d4) 1;
+            border-image: linear-gradient(45deg, #FF2ED1, #00E5FF) 1;
             padding: 30px;
             border-radius: 10px;
             max-width: 600px;
@@ -628,7 +626,7 @@
         }
 
         .modal-title {
-            color: #b88ece;
+            color: #FF2ED1;
             font-size: 20px;
         }
 
@@ -652,14 +650,14 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #888;
+            color: #8A93A8;
         }
 
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(184, 142, 206, 0.3);
-            border-top-color: #b88ece;
+            border: 3px solid rgba(255, 46, 209, 0.3);
+            border-top-color: #FF2ED1;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
@@ -690,11 +688,11 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #888;
+            color: #8A93A8;
         }
 
         .empty-state h3 {
-            color: #b88ece;
+            color: #FF2ED1;
             margin-bottom: 10px;
         }
 
@@ -708,8 +706,8 @@
 
         .filter-select {
             padding: 10px 15px;
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(184, 142, 206, 0.3);
+            background: rgba(27, 27, 38, 0.8);
+            border: 1px solid rgba(255, 46, 209, 0.3);
             border-radius: 5px;
             color: #fff;
             cursor: pointer;
@@ -717,7 +715,7 @@
 
         .filter-select:focus {
             outline: none;
-            border-color: #b88ece;
+            border-color: #FF2ED1;
         }
 
         /* Action buttons in table */
@@ -797,7 +795,14 @@
     <div id="dashboard-content" class="dashboard-content">
         <aside class="sidebar">
             <div class="logo-container">
-                <div class="logo"><a href="index.html">MLM</a></div>
+                <a href="index.html" class="logo" aria-label="MLM — back to site"><svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg" style="width:120px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 10px rgba(0,229,255,.35))">
+                      <defs><linearGradient id="portalLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00E5FF"/><stop offset="100%" stop-color="#FF2ED1"/>
+                      </linearGradient></defs>
+                      <path d="M250 34 L293 106 L207 106 Z" fill="url(#portalLogoGrad)"/>
+                      <text x="250" y="228" text-anchor="middle" font-family="'Archivo Black','Arial Black',Arial,sans-serif" font-size="124" fill="#FFFFFF">MLM</text>
+                      <text x="250" y="290" text-anchor="middle" font-family="'Archivo Black','Arial Black',Arial,sans-serif" font-size="21" letter-spacing="9" fill="#8A93A8">MATT LILLEY MEDIA</text>
+                    </svg></a>
                 <div class="portal-title">Admin Dashboard</div>
                 <span class="admin-badge">🔐 ADMIN</span>
             </div>
@@ -848,7 +853,7 @@
                     </div>
                 </div>
 
-                <h3 style="color: #b88ece; margin-bottom: 15px;">Recent Pending Requests</h3>
+                <h3 style="color: #FF2ED1; margin-bottom: 15px;">Recent Pending Requests</h3>
                 <div id="recent-requests">
                     <div class="loading">
                         <div class="loading-spinner"></div>
@@ -966,7 +971,7 @@
                             <button type="button" class="btn btn-secondary" onclick="addSpot('host')" style="font-size: 12px; padding: 5px 10px;">+ Host</button>
                         </div>
                     </div>
-                    <small style="color: #888;">Add spots to build your lineup. Typical: 5x 6min, 1x 10min, 1x 15min, 1x Host</small>
+                    <small style="color: #8A93A8;">Add spots to build your lineup. Typical: 5x 6min, 1x 10min, 1x 15min, 1x Host</small>
                 </div>
                 <div class="form-group">
                     <label for="gig-description">Description</label>
@@ -1242,7 +1247,7 @@
                                     <td>${escapeHtml(gig.time)}</td>
                                     <td>
                                         ${filled} / ${totalSpots}
-                                        ${spotSummary ? `<br><small style="color: #888;">${spotSummary}</small>` : ''}
+                                        ${spotSummary ? `<br><small style="color: #8A93A8;">${spotSummary}</small>` : ''}
                                     </td>
                                     <td><span class="status-badge ${status}">${status.toUpperCase()}</span></td>
                                     <td>
@@ -1317,7 +1322,7 @@
                             <tr>
                                 <td>
                                     <strong>${escapeHtml(booking.comedianName)}</strong><br>
-                                    <small style="color: #888;">${escapeHtml(booking.comedianEmail)}</small>
+                                    <small style="color: #8A93A8;">${escapeHtml(booking.comedianEmail)}</small>
                                 </td>
                                 <td>${booking.gig ? escapeHtml(booking.gig.venue) : 'Unknown'}</td>
                                 <td>${booking.gig ? formatDate(booking.gig.date) : 'N/A'}</td>
@@ -1441,7 +1446,7 @@
                             <tr>
                                 <td>${escapeHtml(booking.comedianName)}</td>
                                 <td>${booking.gig ? escapeHtml(booking.gig.venue) + ' - ' + formatDate(booking.gig.date) : 'Unknown'}</td>
-                                <td>${booking.requestedSpotType ? `<span style="color: #b88ece;">${escapeHtml(booking.requestedSpotType)}</span>` : 'Any'}</td>
+                                <td>${booking.requestedSpotType ? `<span style="color: #FF2ED1;">${escapeHtml(booking.requestedSpotType)}</span>` : 'Any'}</td>
                                 <td>
                                     <button class="btn btn-success btn-sm" onclick="approveBooking('${booking.id}')">✅</button>
                                     <button class="btn btn-danger btn-sm" onclick="openRejectModal('${booking.id}')">❌</button>
@@ -1512,7 +1517,7 @@
         function renderSpots() {
             const container = document.getElementById('spots-list');
             if (gigSpots.length === 0) {
-                container.innerHTML = '<p style="color: #888; margin: 0;">No spots added yet. Click buttons below to add spots.</p>';
+                container.innerHTML = '<p style="color: #8A93A8; margin: 0;">No spots added yet. Click buttons below to add spots.</p>';
                 return;
             }
 
@@ -1520,7 +1525,7 @@
                 const label = spot.type === 'host' ? 'Host' : `${spot.length} min`;
                 return `
                     <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 3px; margin-bottom: 5px;">
-                        <span style="flex: 1; color: #b88ece;">${index + 1}. ${label}</span>
+                        <span style="flex: 1; color: #FF2ED1;">${index + 1}. ${label}</span>
                         <button type="button" class="btn btn-danger" onclick="removeSpot(${index})" style="font-size: 12px; padding: 3px 8px;">✕</button>
                     </div>
                 `;
@@ -1626,8 +1631,8 @@
 
             document.getElementById('lineup-gig-info').innerHTML = `
                 <div style="margin-bottom: 15px; padding: 15px; background: rgba(30,30,30,0.8); border-radius: 5px;">
-                    <strong style="color: #b88ece;">${escapeHtml(gig.venue)}</strong> - ${formatDate(gig.date)} @ ${gig.time}
-                    <br><small style="color: #888;">${gig.lineup?.length || 0} / ${gig.slotsTotal} slots filled</small>
+                    <strong style="color: #FF2ED1;">${escapeHtml(gig.venue)}</strong> - ${formatDate(gig.date)} @ ${gig.time}
+                    <br><small style="color: #8A93A8;">${gig.lineup?.length || 0} / ${gig.slotsTotal} slots filled</small>
                 </div>
             `;
 
@@ -1670,7 +1675,7 @@
                     <div class="lineup-item" data-comedian-id="${comedian.comedianId}">
                         <span class="lineup-order">${index + 1}</span>
                         <span class="lineup-name">${escapeHtml(comedian.comedianName)}</span>
-                        ${spotLabel ? `<span class="lineup-spot" style="color: #b88ece; font-size: 12px;">${spotLabel}</span>` : ''}
+                        ${spotLabel ? `<span class="lineup-spot" style="color: #FF2ED1; font-size: 12px;">${spotLabel}</span>` : ''}
                         <span class="lineup-email">${escapeHtml(comedian.comedianEmail)}</span>
                         <button class="lineup-remove" onclick="removeFromLineup('${comedian.comedianId}')">Remove</button>
                     </div>
