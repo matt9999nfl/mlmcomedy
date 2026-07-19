@@ -1,735 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLM Comedy - Matt Lilley Media | Christchurch Stand-up Comedy</title>
-    <meta name="description" content="MLM Comedy - Christchurch's premier stand-up comedy production company. Catch the best comedy shows in New Zealand.">
-    
-    <!-- Netlify Identity Widget — needed on the homepage so password-reset / confirmation
-         emails (which link to the site root) are handled by the widget automatically. -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Animated background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, #0a0a0a, #1a0d1a, #0d1a1a);
-            z-index: -2;
-        }
-
-        .triangle-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-            background-image: 
-                linear-gradient(60deg, transparent 40%, rgba(139, 69, 139, 0.1) 40%, rgba(139, 69, 139, 0.1) 60%, transparent 60%),
-                linear-gradient(-60deg, transparent 40%, rgba(110, 184, 212, 0.1) 40%, rgba(110, 184, 212, 0.1) 60%, transparent 60%);
-            background-size: 200% 200%;
-            animation: triangleMove 20s ease-in-out infinite;
-        }
-
-        @keyframes triangleMove {
-            0%, 100% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-        }
-
-        /* Sidebar */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: rgba(10, 10, 10, 0.95);
-            border-right: 2px solid;
-            border-image: linear-gradient(180deg, #6eb8d4, #b88ece, #6eb8d4) 1;
-            padding: 30px 20px;
-            z-index: 100;
-            overflow-y: auto;
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .logo {
-            font-size: 48px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 
-                0 0 10px rgba(110, 184, 212, 0.8),
-                0 0 20px rgba(184, 142, 206, 0.8),
-                0 0 30px rgba(110, 184, 212, 0.6),
-                3px 3px 0 rgba(184, 142, 206, 0.5),
-                -3px -3px 0 rgba(110, 184, 212, 0.5);
-            letter-spacing: 3px;
-            animation: glitch 2s infinite;
-        }
-
-        @keyframes glitch {
-            0%, 100% { text-shadow: 
-                0 0 10px rgba(110, 184, 212, 0.8),
-                0 0 20px rgba(184, 142, 206, 0.8),
-                0 0 30px rgba(110, 184, 212, 0.6),
-                3px 3px 0 rgba(184, 142, 206, 0.5),
-                -3px -3px 0 rgba(110, 184, 212, 0.5);
-            }
-            25% { text-shadow: 
-                0 0 10px rgba(184, 142, 206, 0.8),
-                0 0 20px rgba(110, 184, 212, 0.8),
-                0 0 30px rgba(184, 142, 206, 0.6),
-                -3px 3px 0 rgba(110, 184, 212, 0.5),
-                3px -3px 0 rgba(184, 142, 206, 0.5);
-            }
-            50% { text-shadow: 
-                0 0 10px rgba(110, 184, 212, 0.8),
-                0 0 20px rgba(184, 142, 206, 0.8),
-                0 0 30px rgba(110, 184, 212, 0.6),
-                3px -3px 0 rgba(184, 142, 206, 0.5),
-                -3px 3px 0 rgba(110, 184, 212, 0.5);
-            }
-        }
-
-        .tagline {
-            color: #6eb8d4;
-            font-size: 12px;
-            letter-spacing: 2px;
-            margin-top: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Navigation */
-        .nav-menu {
-            margin-top: 40px;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            color: #fff;
-            text-decoration: none;
-            border: 1px solid transparent;
-            background: linear-gradient(90deg, rgba(110, 184, 212, 0.1), rgba(184, 142, 206, 0.1));
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(110, 184, 212, 0.3), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .nav-item:hover:before {
-            left: 100%;
-        }
-
-        .nav-item:hover {
-            border: 1px solid #6eb8d4;
-            transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(110, 184, 212, 0.5);
-        }
-
-        .coming-soon {
-            font-size: 10px;
-            color: #b88ece;
-            margin-left: 10px;
-        }
-
-        /* Social Links */
-        .social-links {
-            position: absolute;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-        }
-
-        /* Body scroll lock when mobile menu is open */
-        body.menu-open {
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-        }
-
-        .social-links h3 {
-            color: #6eb8d4;
-            margin-bottom: 15px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .social-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            text-align: center;
-            color: #fff;
-            text-decoration: none;
-            border: 2px solid;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .social-btn.instagram {
-            border-color: #b88ece;
-            background: linear-gradient(45deg, rgba(184, 142, 206, 0.2), rgba(184, 142, 206, 0.1));
-        }
-
-        .social-btn.facebook {
-            border-color: #6eb8d4;
-            background: linear-gradient(45deg, rgba(110, 184, 212, 0.2), rgba(110, 184, 212, 0.1));
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(110, 184, 212, 0.5);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            padding: 50px;
-            min-height: 100vh;
-        }
-
-        .hero-section {
-            text-align: center;
-            padding: 100px 0;
-        }
-
-        .hero-title {
-            font-size: 72px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #6eb8d4, #b88ece, #6eb8d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .hero-subtitle {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px rgba(110, 184, 212, 0.5);
-        }
-
-        .location-tag {
-            display: inline-block;
-            padding: 10px 25px;
-            border: 2px solid #6eb8d4;
-            color: #6eb8d4;
-            font-size: 18px;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 50px;
-        }
-
-        .announcement {
-            background: linear-gradient(135deg, rgba(184, 142, 206, 0.1), rgba(110, 184, 212, 0.1));
-            border: 1px solid rgba(110, 184, 212, 0.3);
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(110, 184, 212, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(184, 142, 206, 0.5); }
-        }
-
-        .announcement h2 {
-            color: #b88ece;
-            margin-bottom: 15px;
-            font-size: 28px;
-        }
-
-        .announcement p {
-            color: #fff;
-            line-height: 1.6;
-            font-size: 16px;
-        }
-
-        /* Shows Section */
-        .shows-section {
-            padding: 80px 0;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 48px;
-            text-align: center;
-            margin-bottom: 50px;
-            background: linear-gradient(45deg, #6eb8d4, #b88ece, #6eb8d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% 200%;
-            animation: gradientShift 3s ease-in-out infinite;
-        }
-
-        .shows-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            padding: 0 20px;
-            align-items: start;
-        }
-
-        .show-card {
-            background: linear-gradient(135deg, rgba(184, 142, 206, 0.1), rgba(110, 184, 212, 0.1));
-            border: 1px solid rgba(110, 184, 212, 0.3);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            position: relative;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .show-card.portrait {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .show-card.square {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .show-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(110, 184, 212, 0.3);
-            border-color: #6eb8d4;
-        }
-
-        .show-image {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .show-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .show-card:hover .show-image img {
-            transform: scale(1.05);
-        }
-
-        .show-info {
-            padding: 30px;
-        }
-
-        .show-title {
-            font-size: 32px;
-            color: #fff;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(110, 184, 212, 0.5);
-        }
-
-        .show-comedian {
-            font-size: 18px;
-            color: #b88ece;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .show-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #6eb8d4;
-        }
-
-        .show-details div {
-            padding: 8px 12px;
-            background: rgba(110, 184, 212, 0.1);
-            border: 1px solid rgba(110, 184, 212, 0.3);
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .show-description {
-            color: #fff;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            font-size: 16px;
-        }
-
-        .show-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary, .btn-secondary {
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            flex: 1;
-            text-align: center;
-            min-width: 140px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #b88ece, #6eb8d4);
-            color: #fff;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(184, 142, 206, 0.5);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #6eb8d4;
-            border: 2px solid #6eb8d4;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(110, 184, 212, 0.1);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(110, 184, 212, 0.3);
-        }
-
-        /* Mobile Responsiveness */
-        .mobile-menu-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 200;
-            background: linear-gradient(45deg, #6eb8d4, #b88ece);
-            border: none;
-            padding: 10px 15px;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-toggle {
-                display: block;
-            }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 80px 20px 20px;
-            }
-
-            .hero-title {
-                font-size: 48px;
-            }
-
-            .hero-subtitle {
-                font-size: 18px;
-            }
-
-            .section-title {
-                font-size: 36px;
-            }
-
-            .shows-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .show-title {
-                font-size: 24px;
-            }
-
-            .show-buttons {
-                flex-direction: column;
-            }
-
-            .btn-primary, .btn-secondary {
-                flex: none;
-            }
-
-            .sidebar {
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                display: flex;
-                flex-direction: column;
-                padding-bottom: 30px;
-                overscroll-behavior: contain;
-            }
-
-            .logo-container {
-                flex-shrink: 0;
-            }
-
-            .nav-menu {
-                flex-shrink: 0;
-            }
-
-            .social-links {
-                position: static;
-                margin-top: 30px;
-                padding-top: 20px;
-                flex-shrink: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLM Comedy — Matt Lilley Media | Christchurch Stand-up Comedy</title>
+<meta name="description" content="MLM Comedy — Christchurch's stand-up comedy production company. Late Night Laughs, Bootleg Comedy, and Galactic Comedy. New dates coming soon.">
+<link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
+
+<!-- Netlify Identity Widget — kept here (and only here) because password-reset /
+     confirmation emails link to the site root and the widget handles them
+     automatically on load. Do not remove without checking portal.html flows. -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=Permanent+Marker&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/neon-club.css">
+
+<style>
+  .hero{max-width:1160px; margin:0 auto; padding:46px 28px 8px; text-align:center}
+  .hero .stencil{font-size:clamp(40px,7vw,92px); letter-spacing:.01em; color:var(--cream); text-shadow:0 0 26px rgba(0,229,255,.3), 0 0 46px rgba(255,46,209,.18)}
+  .hero .stencil .spray{color:var(--amber)}
+  .hero .sub{margin:18px auto 0; max-width:56ch; color:var(--body); font-size:clamp(15px,1.8vw,18px); line-height:1.6}
+  .hero .sub b{color:var(--cream)}
+  .award-tag{display:inline-block; margin-top:22px; transform:rotate(-1.6deg); background:var(--amber); color:var(--ink); font-weight:700; font-size:13px; letter-spacing:.06em; text-transform:uppercase; padding:9px 16px; box-shadow:3px 3px 0 rgba(0,0,0,.4)}
+
+  .wall{max-width:1160px; margin:26px auto 0; padding:10px 28px 30px; position:relative}
+  .wall-kicker{text-align:center; margin-bottom:26px}
+  .wall-kicker .marker{font-size:clamp(20px,2.6vw,27px); color:var(--neon-cyan); transform:rotate(-1deg); display:inline-block}
+  .wall-kicker .hand{display:block; margin-top:6px; font-size:clamp(17px,2vw,20px); color:var(--body)}
+  .scrawl{text-align:center; margin-top:30px}
+  .scrawl .hand{font-size:clamp(21px,2.6vw,27px); color:var(--amber)}
+
+  .about{max-width:1160px; margin:64px auto 0; padding:0 28px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center}
+  .about-card h2 em{font-style:normal; background:linear-gradient(120deg, rgba(0,184,212,.3), rgba(225,0,174,.3)); padding:0 5px}
+  .about-card .more{display:inline-block; margin-top:6px; font-weight:700; color:var(--magenta); text-decoration:none; border-bottom:2px solid var(--magenta)}
+  .about-side .marker{font-size:clamp(22px,3vw,30px); color:var(--cream); display:block; line-height:1.5; transform:rotate(-1.2deg)}
+  .about-side .marker .hi{color:var(--neon-magenta)}
+  .about-side .marker .cy{color:var(--neon-cyan)}
+  .about-side .arrow{font-size:44px; color:var(--amber); display:block; margin-top:10px; transform:rotate(8deg)}
+
+  .book{max-width:1160px; margin:70px auto 0; padding:0 28px 20px; text-align:center}
+  .book .plate{display:inline-block; border:2px dashed var(--line); padding:38px 46px; position:relative}
+  .book h2{font-size:clamp(24px,3.4vw,38px); margin-bottom:8px}
+  .book .hand{font-size:24px; color:var(--neon-cyan); display:block; margin-bottom:22px}
+  .book .btns{display:flex; gap:18px; justify-content:center; flex-wrap:wrap}
+
+  @media(max-width:900px){
+    .about{grid-template-columns:1fr}
+    .about-side{text-align:center}
+  }
+</style>
 </head>
-<body>
-    <div class="bg-animation"></div>
-    <div class="triangle-overlay"></div>
+<body class="pw">
 
-    <button class="mobile-menu-toggle" onclick="toggleMenu()">☰</button>
+<div data-include="nav"></div>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="logo-container">
-            <div class="logo">MLM</div>
-            <div class="tagline">Matt Lilley Media</div>
-        </div>
+<header class="hero">
+  <h1 class="head stencil">Stand-up comedy,<br><span class="spray">posted weekly.</span></h1>
+  <p class="sub"><b>MLM Comedy</b> runs Christchurch's warmest rooms — residencies, open mics, headline nights. We're between seasons right now, so the wall's a little bare. New dates go up here first.</p>
+  <span class="award-tag">★ Best Newcomer — NZ Comedy Guild 2024</span>
+</header>
 
-        <nav class="nav-menu">
-            <a href="#home" class="nav-item">Home</a>
-            <a href="#shows" class="nav-item">Shows</a>
-            <a href="bootleg-volstead.html" class="nav-item">🎟️ Bootleg Comedy</a>
-            <a href="about.html" class="nav-item">About</a>
-            <a href="comedians.html" class="nav-item">Comedians</a>
-            <a href="book.html" class="nav-item">Book Us</a>
-            <a href="contact.html" class="nav-item">Contact</a>
-            <a href="portal.html" class="nav-item">🎤 Comedian Portal</a>
-        </nav>
+<section class="wall" id="shows">
+  <div class="wall-kicker">
+    <span class="marker">← the wall's fresh — new dates going up soon →</span>
+    <span class="hand">follow the socials below and you'll hear first</span>
+  </div>
 
-        <div class="social-links">
-            <h3>Follow Us</h3>
-            <a href="https://www.instagram.com/mlmcomedy" target="_blank" class="social-btn instagram">Instagram</a>
-            <a href="https://www.facebook.com/mlmcomedynz" target="_blank" class="social-btn facebook">Facebook</a>
-        </div>
-    </aside>
+  <div class="posters">
+    <a class="poster" href="late-night-laughs.html">
+      <div class="p-brand">MLM Comedy Presents</div>
+      <h3 class="p-title">Late<br>Night<br>Laughs</h3>
+      <div class="p-rule"></div>
+      <p class="p-meta"><b>Good Times Comedy Club</b><br>Our flagship monthly showcase</p>
+      <span class="p-price tba">Next date: TBA →</span>
+      <p class="p-note"><span class="marker">the flagship. zero mercy.</span></p>
+      <span class="torn"></span>
+    </a>
 
-    <main class="main-content">
-        <section class="hero-section" id="home">
-            <h1 class="hero-title">MLM COMEDY</h1>
-            <p class="hero-subtitle">Stand-up Comedy Production</p>
-            <div class="location-tag">CHRISTCHURCH, NZ</div>
+    <a class="poster" href="bootleg-volstead.html">
+      <div class="p-brand">MLM Comedy Presents</div>
+      <h3 class="p-title">Bootleg<br>Comedy</h3>
+      <div class="p-rule"></div>
+      <p class="p-meta"><b>Volstead Trading Co</b><br>Underground. Shhh.</p>
+      <span class="p-price tba">Next date: TBA →</span>
+      <p class="p-note"><span class="marker cy">pay what it was worth</span></p>
+      <span class="torn"></span>
+    </a>
 
-            <div class="announcement">
-                <h2>Welcome to MLM Comedy</h2>
-                <p>We're Christchurch's premier stand-up comedy production company, dedicated to bringing you the best live comedy entertainment in New Zealand. From intimate club shows to large-scale productions, we create unforgettable nights of laughter that celebrate the art of stand-up comedy.</p>
-            </div>
-        </section>
+    <a class="poster" href="galactic-comedy.html">
+      <div class="p-brand">MLM Comedy Presents</div>
+      <h3 class="p-title">Galactic<br>Comedy</h3>
+      <div class="p-rule"></div>
+      <p class="p-meta"><b>Galaxy Bar</b><br>Space themed. Why not.</p>
+      <span class="p-price tba">Next date: TBA →</span>
+      <p class="p-note"><span class="marker">comedy, but towards space</span></p>
+      <span class="torn"></span>
+    </a>
+  </div>
 
-        <section class="shows-section" id="shows">
-            <h2 class="section-title">Shows</h2>
-            
-            <h3 class="section-title" style="font-size: 36px; margin-bottom: 30px; margin-top: 60px;">Past Shows</h3>
-            <div class="shows-grid" id="past-shows-grid">
-                <!-- Past show posters will be automatically loaded here -->
-            </div>
-        </section>
-    </main>
+  <div class="scrawl"><span class="hand">want the old flyers instead? <a href="past-shows.html" style="color:inherit">check the past shows wall</a></span></div>
+</section>
 
-    <script>
-        let scrollPosition = 0;
-        
-        function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const isOpening = !sidebar.classList.contains('active');
-            
-            if (isOpening) {
-                // Save scroll position before locking
-                scrollPosition = window.pageYOffset;
-                document.body.style.top = `-${scrollPosition}px`;
-                sidebar.classList.add('active');
-                document.body.classList.add('menu-open');
-            } else {
-                // Restore scroll position after unlocking
-                sidebar.classList.remove('active');
-                document.body.classList.remove('menu-open');
-                document.body.style.top = '';
-                window.scrollTo(0, scrollPosition);
-            }
-        }
-        
-        function closeMenu() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                document.body.classList.remove('menu-open');
-                document.body.style.top = '';
-                window.scrollTo(0, scrollPosition);
-            }
-        }
+<section class="about" id="about">
+  <div class="paste-card about-card">
+    <h2 class="head">Yes, it says <em>MLM.</em> Relax — we're the good kind.</h2>
+    <p>MLM is Matt Lilley Media: a stand-up production company, est. 2024, Christchurch. We find the comics, pack the rooms and run the nights properly. The pyramid-scheme thing is a joke. The award isn't.</p>
+    <a class="more" href="about.html">The full story →</a>
+  </div>
+  <div class="about-side">
+    <span class="marker">your only downline is the <span class="hi">row of mates</span> you drag along.<br>they'll <span class="cy">thank you</span> later.</span>
+    <span class="arrow">↖</span>
+  </div>
+</section>
 
-        // Close menu when clicking a link on mobile
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    closeMenu();
-                }
-            });
+<section class="book" id="book">
+  <div class="plate">
+    <h2 class="head">Want this wall at your venue?</h2>
+    <span class="hand">offices, festivals, weird private events — we bring everything, even the mic stand</span>
+    <div class="btns">
+      <a class="btn" href="book.html">Book us →</a>
+      <a class="btn ghost" href="mailto:matt@mlmcomedy.com">matt@mlmcomedy.com</a>
+    </div>
+  </div>
+</section>
+
+<div data-include="footer"></div>
+
+<script src="js/include.js" defer></script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', function (user) {
+      if (!user) {
+        window.netlifyIdentity.on('login', function () {
+          document.location.href = '/portal.html';
         });
-
-        // Also close menu when clicking social links on mobile
-        document.querySelectorAll('.social-btn').forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    closeMenu();
-                }
-            });
-        });
-
-        // Add glitch effect on hover
-        const logo = document.querySelector('.logo');
-        logo.addEventListener('mouseenter', () => {
-            logo.style.animation = 'glitch 0.3s infinite';
-        });
-        logo.addEventListener('mouseleave', () => {
-            logo.style.animation = 'glitch 2s infinite';
-        });
-
-        // Automatically load all .show.png files for Past Shows
-        async function loadPastShows() {
-            // List of show poster files (add new .show.png files here or use a directory listing)
-            const showFiles = [
-                'thedeathofrugbyposter.png',
-                'fun.show.png',
-                'SS.show.png',
-                'Gal.show.png',
-                'lnl.show.png',
-                'Dor.show.png'
-            ];
-
-            const pastShowsGrid = document.getElementById('past-shows-grid');
-            
-            for (const filename of showFiles) {
-                // Check if the image file exists
-                const img = new Image();
-                img.onload = function() {
-                    // Extract show name from filename (remove .show.png or poster.png)
-                    let showName = filename
-                        .replace('.show.png', '')
-                        .replace('poster.png', '')
-                        .replace(/([A-Z])/g, ' $1') // Add spaces before capital letters
-                        .trim();
-                    
-                    // Capitalize first letter of each word
-                    showName = showName.charAt(0).toUpperCase() + showName.slice(1);
-                    
-                    // Detect aspect ratio
-                    const aspectRatio = img.width / img.height;
-                    let cardClass = 'show-card';
-                    
-                    // A4 portrait is roughly 0.707 (1:1.414), square is 1.0
-                    if (aspectRatio < 0.85) {
-                        cardClass += ' portrait';
-                    } else if (aspectRatio >= 0.85 && aspectRatio <= 1.15) {
-                        cardClass += ' square';
-                    }
-                    
-                    // Create show card
-                    const showCard = document.createElement('div');
-                    showCard.className = cardClass;
-                    showCard.innerHTML = `
-                        <div class="show-image">
-                            <img src="${filename}" alt="${showName} - Stand-up Comedy Show" />
-                        </div>
-                    `;
-                    
-                    pastShowsGrid.appendChild(showCard);
-                };
-                
-                img.onerror = function() {
-                    console.log(`Could not load image: ${filename}`);
-                };
-                
-                img.src = filename;
-            }
-        }
-
-        // Load past shows when page loads
-        document.addEventListener('DOMContentLoaded', loadPastShows);
-
-        // ── Netlify Identity: handle recovery / confirmation / invite tokens ──
-        // Recovery-email links point to the site root with a #recovery_token hash.
-        // The widget auto-detects the token and opens the "Set new password" dialog.
-        // After a successful login (password set), redirect to the comedian portal.
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on('init', function(user) {
-                if (!user) {
-                    window.netlifyIdentity.on('login', function() {
-                        window.location.href = '/portal.html';
-                    });
-                }
-            });
-        }
-    </script>
+      }
+    });
+  }
+</script>
 </body>
 </html>
