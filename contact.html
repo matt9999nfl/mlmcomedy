@@ -8,21 +8,22 @@
 <link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=Permanent+Marker&family=Caveat:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/poster-wall.css">
+<link rel="stylesheet" href="css/neon-club.css">
 <style>
   .page-wrap{max-width:760px; margin:0 auto; padding:10px 28px 60px}
-  .intro-text{color:#CBBFA8; font-size:16px; margin-bottom:30px}
+  .intro-text{color:var(--body); font-size:16px; margin-bottom:30px}
   .contact-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:40px}
-  .contact-item{background:var(--cream); color:var(--ink); padding:20px; text-align:center; box-shadow:0 10px 26px rgba(0,0,0,.45)}
+  .contact-item{background:linear-gradient(165deg, var(--bg-3), var(--bg-2)); color:#EDEFF5; padding:20px; text-align:center; border:1px solid var(--line); border-radius:8px; box-shadow:0 10px 26px rgba(0,0,0,.5); transition:border-color .15s, box-shadow .15s}
+  .contact-item:hover{border-color:var(--cyan); box-shadow:0 10px 30px rgba(0,229,255,.18)}
   .contact-item:nth-child(1){transform:rotate(-1deg)}
   .contact-item:nth-child(2){transform:rotate(.9deg)}
   .contact-item:nth-child(3){transform:rotate(-.7deg)}
   .contact-icon{font-size:26px; margin-bottom:8px}
-  .contact-label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#6d6353; margin-bottom:6px}
+  .contact-label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--grey); margin-bottom:6px}
   .contact-link{color:var(--magenta); font-weight:700; text-decoration:none; border-bottom:2px solid var(--magenta)}
-  .cta-section{text-align:center; padding-top:24px; border-top:1px solid rgba(243,236,221,.16)}
+  .cta-section{text-align:center; padding-top:24px; border-top:1px solid var(--line)}
   .cta-text{font-size:17px; margin-bottom:6px}
-  .cta-subtitle{color:#CBBFA8}
+  .cta-subtitle{color:var(--body)}
   @media(max-width:600px){ .contact-grid{grid-template-columns:1fr} }
 </style>
 </head>

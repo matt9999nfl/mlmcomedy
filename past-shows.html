@@ -8,18 +8,19 @@
 <link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=Permanent+Marker&family=Caveat:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/poster-wall.css">
+<link rel="stylesheet" href="css/neon-club.css">
 <style>
   .gallery-wrap{max-width:1160px; margin:0 auto; padding:10px 28px 70px}
   .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:38px 30px; margin-top:20px}
-  .gtile{background:var(--cream); padding:14px 14px 16px; box-shadow:0 14px 34px rgba(0,0,0,.5); text-decoration:none; display:block; transition:transform .15s}
+  .gtile{background:linear-gradient(165deg, var(--bg-3), var(--bg-2)); padding:14px 14px 16px; border:1px solid var(--line); border-radius:6px; box-shadow:0 14px 34px rgba(0,0,0,.55); text-decoration:none; display:block; transition:transform .15s, border-color .15s}
+  .gtile:hover{border-color:var(--cyan)}
   .gtile:nth-child(3n+1){transform:rotate(-1.6deg)}
   .gtile:nth-child(3n+2){transform:rotate(1.1deg)}
   .gtile:nth-child(3n){transform:rotate(-.8deg)}
   .gtile:hover{transform:rotate(0) translateY(-4px)}
   .gtile img{width:100%; display:block; margin-bottom:10px}
-  .gtile .gcap{color:var(--ink); font-size:12px; font-weight:700; text-align:center; letter-spacing:.04em}
-  .note{text-align:center; color:#CBBFA8; max-width:60ch; margin:18px auto 0; font-size:14.5px; line-height:1.6}
+  .gtile .gcap{color:var(--body); font-size:12px; font-weight:700; text-align:center; letter-spacing:.04em}
+  .note{text-align:center; color:var(--body); max-width:60ch; margin:18px auto 0; font-size:14.5px; line-height:1.6}
   @media(max-width:900px){ .gallery{grid-template-columns:1fr; max-width:420px; margin-left:auto; margin-right:auto} }
 </style>
 </head>

@@ -8,18 +8,19 @@
 <link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=Permanent+Marker&family=Caveat:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/poster-wall.css">
+<link rel="stylesheet" href="css/neon-club.css">
 <style>
   .page-wrap{max-width:960px; margin:0 auto; padding:10px 28px 60px}
   .comedians-grid{display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:20px}
-  .comedian-card{background:var(--cream); color:var(--ink); padding:26px; box-shadow:0 14px 34px rgba(0,0,0,.5)}
+  .comedian-card{background:linear-gradient(165deg, var(--bg-3), var(--bg-2)); color:#EDEFF5; padding:26px; border:1px solid var(--line); border-radius:8px; box-shadow:0 14px 34px rgba(0,0,0,.55); transition:border-color .15s, box-shadow .15s}
+  .comedian-card:hover{border-color:var(--cyan); box-shadow:0 14px 40px rgba(0,229,255,.2)}
   .comedian-card:nth-child(1){transform:rotate(-1.2deg)}
   .comedian-card:nth-child(2){transform:rotate(1deg)}
   .comedian-photo img{width:100%; display:block; margin-bottom:16px; aspect-ratio:4/5; object-fit:cover}
-  .comedian-name{font-size:22px; margin-bottom:2px}
-  .comedian-title{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#6d6353; margin-bottom:12px}
-  .comedian-bio{font-size:14.5px; line-height:1.65; color:#3b332a; margin-bottom:12px}
-  .comedian-award{display:inline-block; background:var(--amber); color:var(--ink); font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; padding:6px 12px; transform:rotate(-1deg)}
+  .comedian-name{font-size:22px; margin-bottom:2px; color:#fff}
+  .comedian-title{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--grey); margin-bottom:12px}
+  .comedian-bio{font-size:14.5px; line-height:1.65; color:var(--body); margin-bottom:12px}
+  .comedian-award{display:inline-block; background:var(--grad); color:#0D0D12; font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; padding:6px 12px; border-radius:2px}
   @media(max-width:760px){ .comedians-grid{grid-template-columns:1fr; max-width:420px; margin-left:auto; margin-right:auto} }
 </style>
 </head>

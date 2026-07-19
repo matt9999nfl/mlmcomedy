@@ -1,0 +1,156 @@
+/* ==========================================================================
+   MLM Comedy — "Neon Club" design system (Round 4)
+   Dark-club aesthetic built on the official Neon Stage brand palette
+   (Stage Cyan #00E5FF / Neon Magenta #FF2ED1, per Brand Kit guidelines),
+   merged with the page structure/content approach from the Poster Wall
+   build: shared nav/footer include, honest content, evergreen residency
+   pages. Grain + glow kept deliberately so this doesn't flatten into the
+   cold, template-y look the original Round 1 neon mockups had.
+   ========================================================================== */
+
+:root{
+  --bg:#0D0D12; --bg-2:#15151d; --bg-3:#1b1b26;
+  --line: rgba(0,229,255,.22);
+  --ink:#0D0D12; --paper:#F3F4F8;
+  --cyan:#00E5FF; --magenta:#FF2ED1;
+  --cyan-deep:#00B8D4; --magenta-deep:#E100AE;
+  --grey:#8A93A8; --body:#C7CCDA;
+
+  --grad: linear-gradient(135deg, var(--cyan), var(--magenta));
+  --maxw: 1160px;
+
+  /* compatibility aliases so page-level styles carried over from the
+     Poster Wall build resolve to sensible Neon Club equivalents */
+  --cream: #EDEFF5;       /* light text, not a card fill */
+  --amber: #F5D061;       /* sparing warm accent (award tag only) */
+  --neon-cyan: var(--cyan);
+  --neon-magenta: var(--magenta);
+  --wall: var(--bg);
+  --ink: #0D0D12;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body.pw{
+  font-family:'Inter',sans-serif; color:#EDEFF5; background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 70% 40% at 20% -10%, rgba(0,229,255,.14), transparent 60%),
+    radial-gradient(ellipse 70% 40% at 85% 0%, rgba(255,46,209,.12), transparent 60%),
+    linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:auto, auto, 100% 3px, auto;
+  overflow-x:hidden;
+}
+
+.head{font-family:'Archivo Black',sans-serif; text-transform:uppercase; line-height:.95}
+.marker{font-family:'Permanent Marker',cursive}
+.hand{font-family:'Caveat',cursive}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+.glow-cy{text-shadow:0 0 18px rgba(0,229,255,.55)}
+.glow-mg{text-shadow:0 0 18px rgba(255,46,209,.55)}
+
+/* ---------- marquee bulb strip (replaces string lights) ---------- */
+.lights{position:relative; height:34px; overflow:visible; background:linear-gradient(90deg, rgba(0,229,255,.06), rgba(255,46,209,.06))}
+.lights svg{position:absolute; top:0; left:0; width:100%; height:34px}
+
+/* ---------- nav ---------- */
+nav.pw-nav{
+  display:flex; align-items:center; justify-content:space-between; gap:22px;
+  max-width:var(--maxw); margin:0 auto; padding:14px 28px;
+}
+nav.pw-nav .logo svg{width:120px; height:auto; display:block; filter:drop-shadow(0 0 10px rgba(0,229,255,.35))}
+.navlinks{display:flex; gap:24px; flex-wrap:wrap; align-items:center}
+.navlinks a{
+  color:#EDEFF5; text-decoration:none; font-weight:700; font-size:13px;
+  letter-spacing:.12em; text-transform:uppercase; opacity:.75; padding-bottom:3px;
+  border-bottom:2px solid transparent; transition:opacity .15s, border-color .15s, text-shadow .15s;
+}
+.navlinks a:hover, .navlinks a[aria-current="page"]{
+  opacity:1; border-color:var(--cyan); text-shadow:0 0 10px rgba(0,229,255,.6);
+}
+
+.btn{
+  display:inline-block; background:var(--grad); color:var(--ink); text-decoration:none;
+  font-family:'Archivo Black',sans-serif; text-transform:uppercase; letter-spacing:.05em;
+  padding:13px 24px; font-size:13px; border:none; cursor:pointer; border-radius:2px;
+  box-shadow:0 0 0 rgba(0,229,255,0); transition:box-shadow .18s, transform .12s;
+}
+.btn:hover{transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,229,255,.35), 0 6px 24px rgba(255,46,209,.25)}
+.btn.ghost{background:transparent; color:#EDEFF5; border:2px solid var(--cyan); box-shadow:none}
+.btn.ghost:hover{background:rgba(0,229,255,.1); box-shadow:0 0 18px rgba(0,229,255,.3)}
+.btn.disabled{opacity:.5; cursor:default; box-shadow:none; pointer-events:none}
+
+.pw-burger{display:none; background:none; border:none; color:#EDEFF5; font-size:26px; cursor:pointer; line-height:1}
+@media(max-width:900px){
+  nav.pw-nav{flex-wrap:wrap}
+  .pw-burger{display:block; order:2}
+  .navlinks{
+    display:none; order:4; flex-direction:column; width:100%; gap:14px;
+    padding:18px 4px 4px; border-top:1px solid var(--line); margin-top:10px;
+  }
+  .navlinks.open{display:flex}
+}
+
+/* ---------- generic page header ---------- */
+.page-hero{max-width:var(--maxw); margin:0 auto; padding:44px 28px 8px}
+.page-hero .stencil{font-size:clamp(32px,5.5vw,64px); color:#fff; text-shadow:0 0 26px rgba(0,229,255,.25), 0 0 46px rgba(255,46,209,.15)}
+.page-hero .sub{margin-top:14px; max-width:60ch; color:var(--body); font-size:clamp(15px,1.6vw,17px); line-height:1.6}
+
+/* ---------- ticket card (shows, residencies) — replaces the paper "poster" ---------- */
+.posters{display:grid; grid-template-columns:repeat(3,1fr); gap:30px; align-items:start}
+.poster{
+  background:linear-gradient(165deg, var(--bg-3), var(--bg-2)); color:#EDEFF5; position:relative;
+  text-decoration:none; display:block; padding:26px 22px 24px; border-radius:6px;
+  border:1px solid var(--line); box-shadow:0 14px 34px rgba(0,0,0,.55);
+  transition:transform .15s, box-shadow .15s, border-color .15s;
+}
+.poster::after{
+  content:""; position:absolute; inset:0; border-radius:6px; padding:1px;
+  background:var(--grad); opacity:0; transition:opacity .2s;
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none;
+}
+.poster:hover{transform:translateY(-6px); border-color:transparent; box-shadow:0 18px 40px rgba(0,0,0,.6), 0 0 30px rgba(0,229,255,.18)}
+.poster:hover::after{opacity:1}
+.poster .torn{
+  position:absolute; bottom:-1px; left:0; right:0; height:12px;
+  background:radial-gradient(circle at 8px 0, var(--bg) 6px, transparent 7px) 0 0/16px 100% repeat-x;
+}
+.p-brand{font-size:10px; letter-spacing:.3em; text-transform:uppercase; font-weight:700; color:var(--grey); text-align:center}
+.p-title{font-family:'Archivo Black',sans-serif; text-transform:uppercase; text-align:center; font-size:clamp(24px,2.6vw,32px); line-height:.98; margin:12px 0 4px; color:#fff}
+.p-rule{border-top:1px solid var(--line); margin:14px 18px}
+.p-meta{text-align:center; font-size:13.5px; font-weight:600; color:var(--body); line-height:1.75}
+.p-meta b{color:#fff}
+.p-price{display:block; width:max-content; margin:16px auto 0; background:var(--grad); color:var(--ink); font-family:'Archivo Black',sans-serif; font-size:13px; text-transform:uppercase; padding:9px 20px; letter-spacing:.05em; border-radius:2px}
+.p-price.tba{background:transparent; color:var(--cyan); border:2px dashed var(--line)}
+.p-note{text-align:center; margin-top:12px}
+.p-note .marker{font-size:15px; color:var(--magenta)}
+.p-note .marker.cy{color:var(--cyan)}
+.p-badge{position:absolute; top:14px; right:12px; transform:rotate(9deg); border:2px solid var(--magenta); color:var(--magenta); border-radius:50%; width:70px; height:70px; display:flex; align-items:center; justify-content:center; font-family:'Archivo Black',sans-serif; font-size:10px; text-transform:uppercase; text-align:center; line-height:1.2; padding:6px; box-shadow:0 0 14px rgba(255,46,209,.35)}
+
+@media(max-width:900px){ .posters{grid-template-columns:1fr; max-width:430px; margin:0 auto} }
+
+/* ---------- glass card (about/contact/book) — replaces the cream paste-up ---------- */
+.paste-card{
+  background:linear-gradient(165deg, var(--bg-3), var(--bg-2)); color:#EDEFF5; padding:34px;
+  border:1px solid var(--line); border-radius:8px; position:relative;
+  box-shadow:0 14px 34px rgba(0,0,0,.5);
+}
+.paste-card.tilt-r{}
+.paste-card h2, .paste-card h1{font-size:clamp(22px,3vw,32px); margin-bottom:14px; color:#fff}
+.paste-card p{line-height:1.7; color:var(--body); font-size:15.5px; margin-bottom:12px}
+
+/* ---------- footer ---------- */
+footer.pw-footer{border-top:1px solid var(--line); padding:26px 28px 40px; margin-top:70px}
+.foot-in{max-width:var(--maxw); margin:0 auto; display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap; align-items:center}
+footer.pw-footer p{font-size:13px; color:var(--grey); line-height:1.9}
+footer.pw-footer b{color:#EDEFF5}
+footer.pw-footer a{color:#EDEFF5; font-weight:700; text-decoration:none; border-bottom:2px solid var(--cyan)}
+.socials{display:flex; gap:16px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.1em}
+.foot-links{display:flex; gap:14px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; margin-top:6px}
+.foot-links a{border-bottom:1px solid var(--line)}
+
+@media(max-width:900px){
+  .wrap, .page-hero{padding-left:20px; padding-right:20px}
+}
