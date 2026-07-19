@@ -82,14 +82,24 @@ nav.pw-nav .logo svg{width:120px; height:auto; display:block; filter:drop-shadow
 .btn.disabled{opacity:.5; cursor:default; box-shadow:none; pointer-events:none}
 
 .pw-burger{display:none; background:none; border:none; color:#EDEFF5; font-size:26px; cursor:pointer; line-height:1}
+.navlinks .mobile-cta{display:none}
 @media(max-width:900px){
   nav.pw-nav{flex-wrap:wrap}
+  nav.pw-nav .logo{order:1}
   .pw-burger{display:block; order:2}
+  nav.pw-nav > .btn{display:none}
   .navlinks{
-    display:none; order:4; flex-direction:column; width:100%; gap:14px;
+    display:none; order:3; flex-direction:column; width:100%; gap:4px;
     padding:18px 4px 4px; border-top:1px solid var(--line); margin-top:10px;
   }
   .navlinks.open{display:flex}
+  .navlinks a{
+    opacity:1; padding:12px 6px; border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .navlinks a:hover, .navlinks a[aria-current="page"]{background:rgba(0,229,255,.06)}
+  .navlinks .mobile-cta{
+    display:inline-block; text-align:center; margin:10px 6px 4px; border-bottom:none;
+  }
 }
 
 /* ---------- generic page header ---------- */
