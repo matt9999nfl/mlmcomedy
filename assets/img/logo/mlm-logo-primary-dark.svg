@@ -1,0 +1,12 @@
+<svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#FF2ED1"/>
+    </linearGradient>
+  </defs>
+  <rect width="500" height="340" fill="#0D0D12"/>
+  <path d="M250 34 L293 106 L207 106 Z" fill="url(#g)"/>
+  <text x="250" y="228" text-anchor="middle" font-family="'Archivo Black','Arial Black',Arial,sans-serif" font-size="124" fill="#FFFFFF">MLM</text>
+  <text x="250" y="290" text-anchor="middle" font-family="'Archivo Black','Arial Black',Arial,sans-serif" font-size="21" letter-spacing="9" fill="#8A93A8">MATT LILLEY MEDIA</text>
+</svg>

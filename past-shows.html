@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Past Shows | MLM Comedy</title>
+<meta name="description" content="A wall of old MLM Comedy flyers — Late Night Laughs, Bootleg Comedy, Galactic Comedy, and The Death Of Rugby.">
+<link rel="icon" href="assets/img/logo/mlm-favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&family=Permanent+Marker&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/poster-wall.css">
+<style>
+  .gallery-wrap{max-width:1160px; margin:0 auto; padding:10px 28px 70px}
+  .gallery{display:grid; grid-template-columns:repeat(3,1fr); gap:38px 30px; margin-top:20px}
+  .gtile{background:var(--cream); padding:14px 14px 16px; box-shadow:0 14px 34px rgba(0,0,0,.5); text-decoration:none; display:block; transition:transform .15s}
+  .gtile:nth-child(3n+1){transform:rotate(-1.6deg)}
+  .gtile:nth-child(3n+2){transform:rotate(1.1deg)}
+  .gtile:nth-child(3n){transform:rotate(-.8deg)}
+  .gtile:hover{transform:rotate(0) translateY(-4px)}
+  .gtile img{width:100%; display:block; margin-bottom:10px}
+  .gtile .gcap{color:var(--ink); font-size:12px; font-weight:700; text-align:center; letter-spacing:.04em}
+  .note{text-align:center; color:#CBBFA8; max-width:60ch; margin:18px auto 0; font-size:14.5px; line-height:1.6}
+  @media(max-width:900px){ .gallery{grid-template-columns:1fr; max-width:420px; margin-left:auto; margin-right:auto} }
+</style>
+</head>
+<body class="pw">
+
+<div data-include="nav"></div>
+
+<header class="page-hero">
+  <h1 class="head stencil">Past Shows</h1>
+  <p class="sub">Old flyers, left up as-is — old logo and all. History, not a rebrand.</p>
+</header>
+
+<main class="gallery-wrap">
+  <div class="gallery">
+    <a class="gtile" href="thedeathofrugby.html">
+      <img src="assets/img/posters/thedeathofrugbyposter.png" alt="The Death Of Rugby — stand-up comedy show by Matt Lilley">
+      <div class="gcap">The Death Of Rugby — Oct 2025</div>
+    </a>
+    <div class="gtile">
+      <img src="assets/img/posters/lnl.show.png" alt="Late Night Laughs poster">
+      <div class="gcap">Late Night Laughs</div>
+    </div>
+    <div class="gtile">
+      <img src="assets/img/posters/Gal.show.png" alt="Galactic Comedy at Galaxy Bar poster">
+      <div class="gcap">Galactic Comedy @ Galaxy Bar</div>
+    </div>
+    <div class="gtile">
+      <img src="assets/img/posters/fun.show.png" alt="Funday Laughs at Galaxy Bar poster">
+      <div class="gcap">Funday Laughs @ Galaxy Bar</div>
+    </div>
+    <div class="gtile">
+      <img src="assets/img/posters/SS.show.png" alt="MLM Comedy show poster">
+      <div class="gcap">MLM Comedy show</div>
+    </div>
+    <div class="gtile">
+      <img src="assets/img/posters/Dor.show.png" alt="The Death Of Rugby promo poster">
+      <div class="gcap">The Death Of Rugby — promo</div>
+    </div>
+  </div>
+  <p class="note">Want to know what's next instead of what's already happened? Head back to the <a href="index.html" style="color:var(--amber)">home page</a> for upcoming dates.</p>
+</main>
+
+<div data-include="footer"></div>
+<script src="js/include.js" defer></script>
+</body>
+</html>
